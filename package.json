@@ -1,0 +1,14 @@
+{
+  "name": "",
+  "version": "",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sass": "^4.0.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "nodemon": "^1.18.11"
+  }
+}

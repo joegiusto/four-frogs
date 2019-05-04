@@ -1,0 +1,228 @@
+#canvas {
+  width: 800px;
+  height: 800px;
+  border: 5px solid #814d23;
+  background-color: rgba(255, 255, 255, 0.336);
+  display: block;
+  margin: 0rem auto;
+}
+
+#specplayers {
+  width: 100%;
+  height: 100px;
+  // border: 5px solid #814d23;
+  // background-color: rgba(255, 255, 255, 0.336);
+}
+
+.ripple {
+  width: 800px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.1;
+  position: absolute;
+}
+
+.progress-bar-red {
+  background-color: red;
+}
+
+.progress-bar-blue {
+  background-color: blue;
+}
+
+.progress-bar-green {
+  background-color: green;
+}
+
+.progress-bar-yellow {
+  background-color: yellow;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1rem;
+  width: 80%;
+  text-shadow: 0px 0px 2px #000000;
+  position: relative;
+  height: 100%;
+  background-image: url(/bark1.jpg);
+  background-size: 300px;
+  box-shadow: 0px 0px 4px;
+  // border: 5px solid #814d23;
+  background-color: rgba(255, 255, 255, 0.336);
+  &-right {
+    font-size: .85rem;
+    margin-left: 20%;
+    h5 {
+      font-size: 1rem;
+    }
+  }
+}
+
+#ad-holder {
+  height: 100px;
+  padding: .2rem;
+  &-full {
+    position: relative;
+    padding: 0rem;
+    height: 100px;
+  }
+}
+
+body {
+  background-color: rgb(255, 255, 255);
+  margin: 0px;
+}
+
+* {
+  color: black;
+}
+
+#startScreen, #gameScreen {
+  height: 100vh;
+  position: relative;
+}
+
+#startScreen_background {
+  position: relative;
+  background-image: url("/startScreen_background.jpg");
+  filter: blur(4px);
+  /* Full height */
+  height: 100%; 
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#gameScreen .container-fluid {
+  position: absolute;
+  top: 0px;
+}
+
+.login-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: rgba(152, 200, 58, 0.56);
+  padding: 2rem 2rem;
+  border-style: solid;
+  border-width: 3px;
+  border-color: #814d23;
+  border-radius: 5px;
+}
+
+.btn-success {
+  box-shadow: 0px 0px 2px 0px #814d23;
+  &:hover {
+    box-shadow: 0px 0px 5px 0px #814d23;
+  }
+}
+
+.btn-panel {
+  text-shadow: 0px 0px 2px #000000;
+  background-color: peachpuff;
+  border: solid 2px;
+}
+
+.col {
+  // border: 1px solid #000;
+  /* height: 50vh; */
+  position: relative;
+}
+
+.ad-cosmic {
+  cursor: pointer;
+  background-color: #000000;
+  background-image: url(https://cosmicstudios.xyz/assets/img/backgrounds/bg-scroll.png);
+  animation: 100s scroll infinite linear;
+  background-size: 600px;
+  height: 100%;
+  img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+}
+
+.ad {
+  /* margin-top: auto; */
+  width: calc(100% - 5px);
+  height: calc(100% - 5px);
+  background-image: linear-gradient(to bottom right, red, blue);
+  position: absolute;
+  bottom: 2.5px;
+  left: 2.5px;
+}
+
+.modal-content {
+  background-color: peachpuff;
+  border-style: solid;
+  border-width: 3px;
+  border-color: #814d23;
+  border-radius: 5px;
+  text-shadow: 0px 0px 2px #000000;
+  .modal-header {
+    border-bottom: 1px solid #814d23;
+  }
+  .modal-footer {
+    border-top: 1px solid #814d23;
+  }
+  .btn {
+    text-shadow: 0px 0px 2px #000000;
+  }
+}
+
+.panel-content-group {
+  position: relative;
+  background-color: peachpuff;
+  border: solid 2px;
+  margin-top: 2rem;
+  padding: .5rem;
+  &:first-child {
+    margin-top: 0rem;
+  }
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.form-control {
+  font-size: 1.5rem;
+}
+
+.fake-player {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: black;
+}
+
+.version {
+  position: absolute;
+  right: 2%;
+  bottom: 2%;
+}
+
+@-webkit-keyframes scroll {
+  100% {
+    background-position: 0px -3000px; } }
+
+@-moz-keyframes scroll {
+  100% {
+    background-position: 0px -3000px; } }
+
+@-o-keyframes scroll {
+  100% {
+    background-position: 0px -3000px; } }
+
+@-ms-keyframes scroll {
+  100% {
+    background-position: 0px -3000px; } }
+
+@keyframes scroll {
+  100% {
+    background-position: 0px -3000px; } }

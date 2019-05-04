@@ -1,0 +1,145 @@
+<html>
+
+<head>
+  <title>Four Frogs</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <link href="https://fonts.googleapis.com/css?family=Dokdo" rel="stylesheet">
+
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet">
+
+  <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body>
+
+  <section id="startScreen">
+    <div id="startScreen_background"></div>
+
+    <div class="login-form" style="font-family: 'Dokdo', cursive; font-size: 1.5rem;">
+      <h1 style="font-family: 'Dokdo', cursive;">Welcome</h1>
+      <a data-toggle="modal" data-target="#exampleModal" style="color: #6f3d1e;" href="http://cosmicstudios.xyz" onclick="return false"><span style='font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"; font-size: 1rem;'>ℹ️</span>Controls and Rules</a>
+
+        <div class="form-group">
+          <label for="room">Room Number (0-999)</label>
+          <input class="form-control" type="number" placeholder="000" id="room" name="room" max="999" maxlength="3">
+        </div>
+  
+        <div class="form-group">
+          <label for="nickname">Nickname</label>
+          <input class="form-control" type="text" placeholder="Joey" id="nickname" name="nickname" autocomplete="off">
+          <small id="emailHelp" class="form-text text-muted" style="color: #4d5256!important">Visible to other players in the room.</small>
+        </div>
+  
+        <div>
+          <button class="btn btn-success" type="submit">Play</button>
+        </div>
+
+    </div>
+
+    <div style="font-family: 'Dokdo', cursive; font-size: 1.5rem;" class="version">Alpha Build 0.7</div>
+  </section>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-gamepad pr-2"></i>Controls</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+
+            <div class="row">
+
+              <div class="col-12">
+                <img src="./assets/img/controls.png" width="100%" alt="">
+              </div>
+
+              <div class="col-12">
+                <p class="mt-5">Objective: Steal the insects from the other frogs lily pads<br><br>
+
+                  <!-- - Make sure not to get tagged outside your zone to avoid a penality<br><br> -->
+
+                  - Tag players trying to steal your insects to send them packing back to thier pad with a timeout<br><br>
+                  - Avoid being tagged outside your own zone<br><br>
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-panel" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous">
+</script>
+
+<script>
+    $('button').click( function() {
+        document.cookie = 'nickname='+$('#nickname').val()+'; path=/';
+        doSomething();
+    });
+
+    function getCookie(name) {
+        var dc = document.cookie;
+        var prefix = name + "=";
+        var begin = dc.indexOf("; " + prefix);
+        if (begin == -1) {
+            begin = dc.indexOf(prefix);
+            if (begin != 0) return null;
+        }
+        else
+        {
+            begin += 2;
+            var end = document.cookie.indexOf(";", begin);
+            if (end == -1) {
+            end = dc.length;
+            }
+        }
+        // because unescape has been deprecated, replaced with decodeURI
+        //return unescape(dc.substring(begin + prefix.length, end));
+        return decodeURI(dc.substring(begin + prefix.length, end));
+    } 
+
+    function doSomething() {
+        var myCookie = getCookie("nickname");
+
+        if (myCookie == null) {
+            // do cookie doesn't exist stuff;
+            window.location.replace("../join.html");
+            console.log("No Cookie :(");
+        }
+        else {
+            // do cookie exists stuff;
+            console.log("Cookie :)");
+            window.location.replace("/");
+        }
+    }
+</script>
+<script>
+  $('#myModal').on('shown.bs.modal', function () {
+    $('#myInput').trigger('focus')
+  })
+</script>
+
+<!-- <script src="/static/game.js"></script> -->
+
+</html>

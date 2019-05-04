@@ -1,0 +1,263 @@
+<html>
+
+<head>
+  <title>Four Frogs</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <link href="https://fonts.googleapis.com/css?family=Dokdo" rel="stylesheet">
+
+  <script src="/socket.io/socket.io.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+
+<body>
+
+  <section id="gameScreen">
+    <div id="startScreen_background"></div>
+
+    <div class="container-fluid h-100">
+      <div class="row h-100">
+
+        <div class="col-12 col-xl-6 my-auto order-xl-2">
+
+          <!-- Shit Lags the site -->
+          <!-- <img class="img-fluid ripple" src="./assets/ripple.gif" alt=""> -->
+
+          <canvas id="canvas"></canvas>
+
+        </div>
+
+        <div class="col-6 col-xl-3 my-auto order-xl-1">
+
+          <div class="panel">
+
+            <!-- <h5>Room Number: <span >001</span></h5> -->
+
+            <div class="panel-content-group text-center">
+              <h5>Room Number: <span >001</span></h5>
+              <span id="lobbyStatus"></span>
+            </div>
+  
+            <div class="panel-content-group">
+              <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                <h5>Players</h5>
+                <h5><span id="playerCount">0</span>/4</h5>
+              </div>
+              <p>Red - <span id="lobby_1"></span></p>
+              <p>Blue - <span id="lobby_2"></span></p>
+              <p>Green - <span id="lobby_3"></span></p>
+              <p>Yellow - <span id="lobby_4"></span></p>
+            </div>
+            
+            <div class="panel-content-group" style="flex-grow: 1;">
+              <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                <h5>Specplayers</h5>
+                <h5>0</h5>
+              </div>
+              
+              <p>Bug-1 - X:0 Y:0 Holder:null</p>
+              <p>Bug-2 - X:0 Y:0 Holder:null</p>
+              <p>Bug-3 - X:0 Y:0 Holder:null</p>
+              <br>
+              <p>Bug-4 - X:0 Y:0 Holder:null</p>
+              <p>Bug-5 - X:0 Y:0 Holder:null</p>
+              <p>Bug-6 - X:0 Y:0 Holder:null</p>
+              <br>
+              <p>Bug-7 - X:0 Y:0 Holder:null</p>
+              <p>Bug-8 - X:0 Y:0 Holder:null</p>
+              <p>Bug-9 - X:0 Y:0 Holder:null</p>
+              <br>
+              <p>Bug-10 - X:0 Y:0 Holder:null</p>
+              <p>Bug-11 - X:0 Y:0 Holder:null</p>
+              <p>Bug-12 - X:0 Y:0 Holder:null</p>
+              <canvas id="specplayers"></canvas>
+  
+            </div>
+
+            <!-- <h5 class="mt-3">Ad</h5>
+            <div class="panel-content-group mt-0" id="ad-holder">
+              <div class="ad"></div>
+            </div> -->
+
+            <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 2rem;">
+              <button id="controls" class="btn btn-panel btn-lg" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-gamepad pr-2"></i>Controls</button>
+              <button id="nameChange" class="btn btn-panel btn-lg"><i class="fas fa-edit pr-2"></i>Name</button>
+            </div>
+            
+          </div>
+
+        </div>
+
+        <div class="col-6 col-xl-3 my-auto order-xl-3">
+
+          <div class="panel panel-right">
+            <div class="panel-content-group">
+              <h5>Red Player</h5>
+              <div id="playerOneId">id</div>
+              <span id="stats_1"></span>
+              <br>
+              Health:
+              <!-- <progress value="22" max="100"></progress> -->
+              <div class="progress w-50">
+                <div class="progress-bar progress-bar-red" id="redHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              Resources:
+              <!-- <progress value="2" max="100"></progress> -->
+              <div class="progress w-50">
+                <div class="progress-bar progress-bar-red" id="redResource" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+  
+            <div class="panel-content-group">
+              <h5>Blue Player</h5>
+              <div id="playerTwoId">id</div>
+              <span id="stats_2"></span>
+              <br>
+              Health:
+              <!-- <progress value="22" max="100"></progress> -->
+              <div class="progress w-50">
+                <div class="progress-bar progress-bar-blue" id="blueHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              Resources:
+              <!-- <progress value="2" max="100"></progress> -->
+              <div class="progress w-50">
+                <div class="progress-bar progress-bar-blue" id="blueResource" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+  
+            <div class="panel-content-group">
+              <h5>Green Player</h5>
+              <div id="playerThreeId">id</div>
+              <span id="stats_3"></span>
+              <br>
+              Health:
+              <!-- <progress value="22" max="100"></progress> -->
+              <div class="progress w-50">
+                <div class="progress-bar progress-bar-green" id="greenHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              Resources:
+              <!-- <progress value="2" max="100"></progress> -->
+              <div class="progress w-50">
+                <div class="progress-bar progress-bar-green" id="greenResource" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+  
+            <div class="panel-content-group">
+              <h5>Yellow Player</h5>
+              <div id="playerFourId">id</div>
+              <span id="stats_4"></span>
+              <br>
+              Health:
+              <!-- <progress value="22" max="100"></progress> -->
+              <div class="progress w-50">
+                <div class="progress-bar progress-bar-yellow" id="yellowHealth" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              Resources:
+              <!-- <progress value="2" max="100"></progress> -->
+              <div class="progress w-50">
+                <div class="progress-bar progress-bar-yellow" id="yellowResource" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+
+            <div class="space-fill" style="flex-grow: 1;"></div>
+
+            <h5 class="mt-5 d-none">Server Sponser</h5>
+            <div class="panel-content-group mt-0 d-none" id="ad-holder-full">
+              <a href="https://cosmicstudios.xyz" target="_blank">
+                <div class="ad-cosmic">
+                  <img src="https://cosmicstudios.xyz/assets/img/profile.svg" height="75px" alt="">
+                </div>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <img style="display: none;" id="pad" src="pad.png" width="30">
+  <img style="display: none;" id="padGreen" src="https://flexboxfroggy.com/images/lilypad-green.svg">
+  <img style="display: none;" id="padYellow" src="https://flexboxfroggy.com/images/lilypad-yellow.svg">
+  <img style="display: none;" id="padRed" src="https://flexboxfroggy.com/images/lilypad-red.svg">
+  <img style="display: none;" id="padBlue" src="padBlue.svg">
+
+  <img style="display: none;" id="bug-1" src="bug-1.png" width="10">
+  <img style="display: none;" id="bug-2" src="bug-2.png" width="30">
+  <img style="display: none;" id="bug-3" src="bug-3.png" width="30">
+  <img style="display: none;" id="bug-4" src="bug-4.png" width="30">
+  <img style="display: none;" id="bug-5" src="bug-5.png" width="10">
+  <img style="display: none;" id="bug-6" src="bug-6.png" width="30">
+  <img style="display: none;" id="bug-7" src="bug-7.png" width="30">
+  <img style="display: none;" id="bug-8" src="bug-8.png" width="30">
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-gamepad pr-2"></i>Controls</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+
+            <div class="row">
+
+              <div class="col-12">
+                <img src="./assets/img/controls.png" width="100%" alt="">
+              </div>
+
+              <div class="col-12">
+                <p class="mt-5">Objective: Steal the insects from the other frogs lily pads<br><br>
+
+                  <!-- - Make sure not to get tagged outside your zone to avoid a penality<br><br> -->
+
+                  - Tag players trying to steal your insects to send them packing back to thier pad with a timeout<br><br>
+                  - Avoid being tagged outside your own zone<br><br>
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-panel" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous">
+</script>
+<script 
+  src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+  crossorigin="anonymous">
+</script>
+<script>
+  $('#myModal').on('shown.bs.modal', function () {
+    $('#myInput').trigger('focus')
+  })
+</script>
+
+<script src="/static/game.js"></script>
+
+</html>
