@@ -22,17 +22,23 @@
 
     <div class="login-form" style="font-family: 'Dokdo', cursive; font-size: 1.5rem;">
       <h1 style="font-family: 'Dokdo', cursive;">Welcome</h1>
-      <a data-toggle="modal" data-target="#exampleModal" style="color: #6f3d1e;" href="http://cosmicstudios.xyz" onclick="return false"><span style='font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"; font-size: 1rem;'>ℹ️</span>Controls and Rules</a>
+      <a data-toggle="modal" data-target="#exampleModal" style="color: #6f3d1e;"  onclick="javascript.preventDefault()"><span style='font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"; font-size: 1rem;'>ℹ️</span>Controls and Rules</a>
 
         <div class="form-group">
-          <label for="room">Room Number (0-999)</label>
-          <input class="form-control" type="number" placeholder="000" id="room" name="room" max="999" maxlength="3">
+          <label for="room">Room Number (disabled)</label>
+          <br>
+          <button class="btn btn-success d-inline-block" disabled>1</button>
+          <button class="btn btn-success d-inline-block" disabled>2</button>
+          <button class="btn btn-success d-inline-block" disabled>3</button>
+          <!-- <button class="btn btn-success d-inline-block">4</button> -->
+          <!-- <button class="btn btn-success d-inline-block">5</button> -->
+          <!-- <input class="form-control" type="number" placeholder="000" id="room" name="room" max="999" maxlength="3"> -->
         </div>
   
         <div class="form-group">
           <label for="nickname">Nickname</label>
-          <input class="form-control" type="text" placeholder="Joey" id="nickname" name="nickname" autocomplete="off">
-          <small id="emailHelp" class="form-text text-muted" style="color: #4d5256!important">Visible to other players in the room.</small>
+          <input class="form-control" type="text" placeholder="" id="nickname" name="nickname" autocomplete="off">
+          <small id="emailHelp" class="form-text text-muted" style="color: #4d5256!important">Visible to all players in the game.</small>
         </div>
   
         <div>
@@ -91,7 +97,11 @@
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous">
 </script>
-
+<script 
+src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+crossorigin="anonymous">
+</script>
 <script>
     $('button').click( function() {
         document.cookie = 'nickname='+$('#nickname').val()+'; path=/';

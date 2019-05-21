@@ -37,41 +37,82 @@ server.listen(8081, function() {
 io.on('connection', function(socket) {
 });
 
-setInterval(function() {
-  io.sockets.emit('message', 'hi!');
-}, 1000);
+// setInterval(function() {
+//   io.sockets.emit('message', 'hi!');
+// }, 1000);
 
-function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
+// function getRandomColor() {
+//   var letters = '0123456789ABCDEF';
+//   var color = '#';
+//   for (var i = 0; i < 6; i++) {
+//     color += letters[Math.floor(Math.random() * 16)];
+//   }
+//   return color;
+// }
+
+// var onlinePlayerCount = 0;
+
+var game = {
+  active: false,
+  players: {},
+  specPlayers: {},
+  bugs: []
 }
 
-var onlinePlayerCount = 0;
-var players = {};
-var playerID = [
-
+bugStart = [
+  '10,20', 
+  '10,20',
+  '10,20',
+  '10,20',
+  '10,20',
+  '10,20',
+  '10,20',
+  '10,20',
+  '10,20',
+  '10,20',
+  '10,20',
+  '10,20',
 ];
+
+for (i = 0; i < 12; i++) {
+  game.bugs.push({
+    held: false,
+    heldBy: 'No One',
+    x: bugStart[i].split(',')[0],
+    y: bugStart[i].split(',')[1],
+    bugType: Math.floor((Math.random() * 6) + 1)
+  })
+}
+
+setInterval(function() {
+  io.sockets.emit('bugs', game.bugs);
+}, 1000);
+
+console.log(game);
+
+var players = {};
+// var playerID = [
+
+// ];
+
+function ObjectLength( object ) {
+  var length = 0;
+  for( var key in object ) {
+      if( object.hasOwnProperty(key) ) {
+          ++length;
+      }
+  }
+  return length;
+};
 
 
 io.on('connection', function(socket) {
 
   socket.on('new player', function(data) {
-    onlinePlayerCount++;
-    console.log('Player Connected! There are/is now ' + onlinePlayerCount + ' player/s online.');
-    
-    io.sockets.emit('playerCount', onlinePlayerCount);
 
-    playerID.push(socket.id);
-    // console.log(playerID);
-    console.log(data['nickname']);
-    io.sockets.emit('playerID', playerID);
-
-    if (onlinePlayerCount == 1) {
+    if (ObjectLength(players) == 0) {
       players[socket.id] = {
+        active: false,
         x: 80,
         y: 80,
         xStart: 80,
@@ -87,8 +128,9 @@ io.on('connection', function(socket) {
         holding: 0,
         tongue: false
       };
-    } else if (onlinePlayerCount == 2) {
+    } else if (ObjectLength(players) == 1) {
       players[socket.id] = {
+        active: false,
         x: 720,
         y: 80,
         xStart: 720,
@@ -104,8 +146,9 @@ io.on('connection', function(socket) {
         holding: 0,
         tongue: false
       };
-    } else if (onlinePlayerCount == 3) {
+    } else if (ObjectLength(players) == 2) {
       players[socket.id] = {
+        active: false,
         x: 80,
         y: 720,
         r: 0,
@@ -119,8 +162,9 @@ io.on('connection', function(socket) {
         holding: 0,
         tongue: false
       };
-    } else if (onlinePlayerCount == 4) {
+    } else if (ObjectLength(players) == 3) {
       players[socket.id] = {
+        active: false,
         x: 720,
         y: 720,
         r: 0,
@@ -147,6 +191,14 @@ io.on('connection', function(socket) {
       };
     };
 
+    console.log(players);
+    console.log('Player Connected! There are/is now ' + ObjectLength(players) + ' player/s online.');
+
+    io.sockets.emit( 'newPlayer', ObjectLength(players), players );
+
+    console.log('Player Count')
+    console.log(ObjectLength(players));
+
   });
 
   var playerSpeed = 5;
@@ -168,7 +220,7 @@ io.on('connection', function(socket) {
     if (data.right && player.x < 800 - playerSize -5 ) {
       player.x += playerSpeed;
     }
-    
+
     if (data.down && player.y < 800 - playerSize -5 ) {
       player.y += playerSpeed;
     }
@@ -211,21 +263,21 @@ io.on('connection', function(socket) {
       player.zone = "yellow";
     }
 
-    socket.on('playerTagged', function(id) {
-      players[id].x = players[id].xStart;
-      players[id].y = players[id].yStart;
-      players[id].health = players[id].health - 33;
-      console.log("Fired" + id);
-    });
+    // socket.on('playerTagged', function(id) {
+    //   players[id].x = players[id].xStart;
+    //   players[id].y = players[id].yStart;
+    //   players[id].health = players[id].health - 33;
+    //   console.log("Fired" + id);
+    // });
 
   });
 
-  socket.on('getPlayerLocations', function(data) {
-    console.log(playerID.player1);
-    console.log(playerID.player2);
-    console.log(playerID.player3);
-    console.log(playerID.player4);
-  });
+  // socket.on('getPlayerLocations', function(data) {
+  //   console.log(playerID.player1);
+  //   console.log(playerID.player2);
+  //   console.log(playerID.player3);
+  //   console.log(playerID.player4);
+  // });
 
   socket.on('disconnect', function() {
     // players[socket.id] = {
@@ -233,9 +285,9 @@ io.on('connection', function(socket) {
     //   y: 0,
     //   color: "white"
     // };
-    onlinePlayerCount--;
-    console.log('Player Disconnected! There are/is now ' + onlinePlayerCount + ' player/s online.');
-    io.sockets.emit('playerCount', onlinePlayerCount);
+    // onlinePlayerCount--;
+    console.log('Player Disconnected! There are/is now ' + 'onlinePlayerCount' + ' player/s online.');
+    // io.sockets.emit('playerCount', onlinePlayerCount);
     io.sockets.emit('disconnect');
   });
 
@@ -250,11 +302,15 @@ setInterval(function() {
 io.on('connection', function(socket) {
   // other handlers ...
   socket.on('disconnect', function() {
-    players[socket.id] = {
-      x: players[socket.id].x,
-      y: players[socket.id].y,
-      color: "white",
-      nickname: "Big Baby"
-    };
+
+    if (game.active === true) {
+      players[socket.id] = {
+        color: "white",
+        nickname: "Disconnected"
+      };
+    } else {
+      delete players[socket.id];
+    }
+
   });
 });

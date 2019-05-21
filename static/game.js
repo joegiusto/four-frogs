@@ -22,35 +22,58 @@ function getCookie(name) {
 var myCookie = getCookie("nickname");
 
 if (myCookie == null) {
-    // do cookie doesn't exist stuff;
+    // Cookie does not exist stuff;
     document.cookie = "nickname" + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     window.location.replace("../join.html");
     console.log("No Cookie :(");
 }
 else {
-    // do cookie exists stuff;
-    console.log("Cookie :)");
-
-    // $( "#controls" ).click(function() {
-    //   alert( "Modal control call eventually" );
-    // });
+    // Cookie does exist stuff;
+    console.log("Cookie exist, bringing player into game");
 
     $( "#nameChange" ).click(function() {
       window.location.replace("../join.html");
     });
 
     var socket = io();
-    socket.on('message', function(data) {
-      console.log(data);
-    });
 
-    var playerCount = 0;
+    // socket.on('message', function(data) {
+    //   console.log(data);
+    // });
 
-    socket.on('playerCount', function(data) {
-      document.getElementById('playerCount').innerHTML = (data);
-      playerCount = data;
 
-      data >= 4 ? ($('#lobbyStatus').html('[Game In Progress]'), $('#lobbyStatus').css("color", "green") ) : ( $('#lobbyStatus').html('[Waiting on more players]'), $('#lobbyStatus').css("color", "red") );
+
+    socket.on('newPlayer', function(totalPlayerCount, players) {
+
+      document.getElementById('playerCount').innerHTML = totalPlayerCount;
+      totalPlayerCount >= 4 ? ($('#lobbyStatus').html('[Game In Progress]'), $('#lobbyStatus').css("color", "green") ) : ( $('#lobbyStatus').html('[Waiting on more players]'), $('#lobbyStatus').css("color", "red") );
+
+      var keyNames = Object.keys(players);
+
+      try {
+        document.getElementById('lobby_1').innerHTML = players[ keyNames[0] ].nickname;
+      }
+      catch(err) {
+        console.log('Red Player is still needed to start the game')
+      }
+      try {
+        document.getElementById('lobby_2').innerHTML = players[ keyNames[1] ].nickname;
+      }
+      catch(err) {
+        console.log('Blue Player is still needed to start the game')
+      }
+      try {
+        document.getElementById('lobby_3').innerHTML = players[ keyNames[2] ].nickname;
+      }
+      catch(err) {
+        console.log('Green Player is still needed to start the game')
+      }
+      try {
+        document.getElementById('lobby_4').innerHTML = players[ keyNames[3] ].nickname;
+      }
+      catch(err) {
+        console.log('Yellow Player is still needed to start the game')
+      }
 
     });
 
@@ -114,7 +137,20 @@ else {
 
     socket.emit( 'new player', { nickname: getCookie("nickname") } );
 
-    socket.emit('getPlayerLocations');
+    socket.on('bugs', function(data) {
+      document.getElementById('bug-1-info').innerHTML = 'X:' + data[0].x + ' Y:' + data[0].y + ' Holder:' + data[0].heldBy;
+      document.getElementById('bug-2-info').innerHTML = 'X:' + data[1].x + ' Y:' + data[1].y + ' Holder:' + data[1].heldBy;
+      document.getElementById('bug-3-info').innerHTML = 'X:' + data[2].x + ' Y:' + data[2].y + ' Holder:' + data[2].heldBy;
+      document.getElementById('bug-4-info').innerHTML = 'X:' + data[3].x + ' Y:' + data[3].y + ' Holder:' + data[3].heldBy;
+      document.getElementById('bug-5-info').innerHTML = 'X:' + data[4].x + ' Y:' + data[4].y + ' Holder:' + data[4].heldBy;
+      document.getElementById('bug-6-info').innerHTML = 'X:' + data[5].x + ' Y:' + data[5].y + ' Holder:' + data[5].heldBy;
+      document.getElementById('bug-7-info').innerHTML = 'X:' + data[6].x + ' Y:' + data[6].y + ' Holder:' + data[6].heldBy;
+      document.getElementById('bug-8-info').innerHTML = 'X:' + data[7].x + ' Y:' + data[7].y + ' Holder:' + data[7].heldBy;
+      document.getElementById('bug-9-info').innerHTML = 'X:' + data[8].x + ' Y:' + data[8].y + ' Holder:' + data[8].heldBy;
+      document.getElementById('bug-10-info').innerHTML = 'X:' + data[9].x + ' Y:' + data[9].y + ' Holder:' + data[9].heldBy;
+      document.getElementById('bug-11-info').innerHTML = 'X:' + data[10].x + ' Y:' + data[10].y + ' Holder:' + data[10].heldBy;
+      document.getElementById('bug-12-info').innerHTML = 'X:' + data[11].x + ' Y:' + data[11].y + ' Holder:' + data[11].heldBy;
+    });
 
     setInterval(function() {
       socket.emit('movement', movement);
@@ -140,10 +176,10 @@ else {
     var context = canvas.getContext('2d');
 
     socket.on('playerID', function(data) {
-      document.getElementById('playerOneId').innerHTML = data[0];
-      document.getElementById('playerTwoId').innerHTML = data[1];
-      document.getElementById('playerThreeId').innerHTML = data[2];
-      document.getElementById('playerFourId').innerHTML = data[3];
+      document.getElementById('playerOneId').innerHTML = data[0].id;
+      document.getElementById('playerTwoId').innerHTML = data[1].id;
+      document.getElementById('playerThreeId').innerHTML = data[2].id;
+      document.getElementById('playerFourId').innerHTML = data[3].id;
     });
 
     function RandomBug() {
@@ -291,8 +327,8 @@ else {
       // console.log(players);
 
       try {
-        $("#redHealth").css("width", players[keyNames[0] ].health + "%" );
-        $("#blueHealth").css("width", players[keyNames[1] ].health + "%" );
+        // $("#redHealth").css("width", players[keyNames[0] ].health + "%" );
+        // $("#blueHealth").css("width", players[keyNames[1] ].health + "%" );
         // $("#greenHealth").css("width", players[keyNames[2] ].health + "%" );
         // $("#yellowHealth").css("width", players[keyNames[3] ].health + "%" );
 
@@ -304,26 +340,32 @@ else {
            console.log("Collision");
 
            // Blue tagged in Red Home
-           if ( players[ keyNames[1] ].zone == players[ keyNames[0] ].homeZone ) {
-            socket.emit('playerTagged', players[ keyNames[1] ].id);
-            console.log("Blue tagged in Red Home");
-           }
+          //  if ( players[ keyNames[1] ].zone == players[ keyNames[0] ].homeZone ) {
+          //   socket.emit('playerTagged', players[ keyNames[1] ].id);
+          //   console.log("Blue tagged in Red Home");
+          //  }
 
            // Red tagged in Blue Home
-           if ( players[ keyNames[0] ].zone == players[ keyNames[1] ].homeZone ) {
-            socket.emit('playerTagged', players[ keyNames[0] ].id);
-            console.log("Red tagged in Blue Home");
-           }
+          //  if ( players[ keyNames[0] ].zone == players[ keyNames[1] ].homeZone ) {
+          //   socket.emit('playerTagged', players[ keyNames[0] ].id);
+          //   console.log("Red tagged in Blue Home");
+          //  }
 
        } else {
-        console.log("No Collision");
+        // No Collision
        }
       }
       catch(err) {
-        // console.log("Player not yet joined, Status:" + err);
+        // console.log("Error: " + err);
       }
 
+      // document.getElementById('playerOneId').innerHTML = players[ keyNames[0] ].id || 'blank';
+      // document.getElementById('playerTwoId').innerHTML = players[ keyNames[1] ].id || 'blank';
+      // document.getElementById('playerThreeId').innerHTML = players[ keyNames[2] ].id || 'blank';
+      // document.getElementById('playerFourId').innerHTML = players[ keyNames[3] ].id || 'blank';
+
       try {
+        
         stats_1.innerHTML= 'X:' + players[ keyNames[0] ].x + ' Y: ' + players[ keyNames[0] ].y + ' R:' + players[ keyNames[0] ].r + ' Score:' + players[ keyNames[0] ].score + '<br>Zone:' + players[ keyNames[0] ].zone + ' Holding:' + players[ keyNames[0] ].holding + ' Tongue:' + players[ keyNames[0] ].tongue;
         stats_2.innerHTML= 'X:' + players[ keyNames[1] ].x + ' Y: ' + players[ keyNames[1] ].y + ' R:' + players[ keyNames[1] ].r + ' Score:' + players[ keyNames[1] ].score + '<br>Zone:' + players[ keyNames[1] ].zone + ' Holding:' + players[ keyNames[1] ].holding;
         stats_3.innerHTML= 'X:' + players[ keyNames[2] ].x + ' Y: ' + players[ keyNames[2] ].y + ' R:' + players[ keyNames[2] ].r + ' Score:' + players[ keyNames[2] ].score + '<br>Zone:' + players[ keyNames[2] ].zone + ' Holding:' + players[ keyNames[2] ].holding;
