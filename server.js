@@ -84,9 +84,11 @@ for (i = 0; i < 12; i++) {
   })
 }
 
-setInterval(function() {
-  io.sockets.emit('bugs', game.bugs);
-}, 1000);
+function canMoveReset(player) {
+  setTimeout(function () {
+    player.canMove = true;
+  }, 1500);
+}
 
 console.log(game);
 
@@ -127,6 +129,7 @@ io.on('connection', function(socket) {
         homeZone: "red",
         holding: 0,
         canHold: true,
+        canMove: true,
         tongue: false
       };
     } else if (ObjectLength(players) == 1) {
@@ -145,6 +148,8 @@ io.on('connection', function(socket) {
         zone: "blue",
         homeZone: "blue",
         holding: 0,
+        canHold: true,
+        canMove: true,
         tongue: false
       };
     } else if (ObjectLength(players) == 2) {
@@ -163,6 +168,8 @@ io.on('connection', function(socket) {
         zone: "green",
         homeZone: "green",
         holding: 0,
+        canHold: true,
+        canMove: true,
         tongue: false
       };
     } else if (ObjectLength(players) == 3) {
@@ -181,6 +188,8 @@ io.on('connection', function(socket) {
         zone: "yellow",
         homeZone: "yellow",
         holding: 0,
+        canHold: true,
+        canMove: true,
         tongue: false
       };
     } else {
@@ -214,20 +223,22 @@ io.on('connection', function(socket) {
 
     var player = players[socket.id] || {};
 
-    if (data.left && player.x > 5) {
-      player.x -= playerSpeed;
-    }
-
-    if (data.up && player.y > 5) {
-      player.y -= playerSpeed;
-    }
-
-    if (data.right && player.x < 800 - playerSize -5 ) {
-      player.x += playerSpeed;
-    }
-
-    if (data.down && player.y < 800 - playerSize -5 ) {
-      player.y += playerSpeed;
+    if (player.canMove === true) {
+      if (data.left && player.x > 5) {
+        player.x -= playerSpeed;
+      }
+  
+      if (data.up && player.y > 5) {
+        player.y -= playerSpeed;
+      }
+  
+      if (data.right && player.x < 800 - playerSize -5 ) {
+        player.x += playerSpeed;
+      }
+  
+      if (data.down && player.y < 800 - playerSize -5 ) {
+        player.y += playerSpeed;
+      }
     }
 
     if (data.rotateLeft) {
@@ -249,7 +260,13 @@ io.on('connection', function(socket) {
     }
 
     if (data.tongue) {
-      player.tongue = !player.tongue;
+      player.tongue = true;
+      player.holding = -3;
+      setInterval( function() { 
+        player.holding = 0;
+      }, 3000);
+    } else {
+      player.tongue = false;
     }
 
     if (player.x <= 400 - playerSizeCut && player.y <= 400 - playerSizeCut) {
@@ -283,11 +300,13 @@ io.on('connection', function(socket) {
               console.log('Send player ' + j + ' back to home zone');
               players[keyNames[j]].x = players[keyNames[j]].xStart;
               players[keyNames[j]].y = players[keyNames[j]].yStart;
+              players[keyNames[j]].canMove = false;
+              canMoveReset(players[keyNames[j]]);
             }
           }
         }
         catch {
-          console.log('Lobby not full')
+          // console.log('Lobby not full')
         }
 
       }
@@ -297,9 +316,10 @@ io.on('connection', function(socket) {
     // console.log('player ' + player.id + ' is moving');
     for ( i = 0; i < game.bugs.length; i++ ) {
 
-      if (player.x > game.bugs[i].x && player.x < +game.bugs[i].x + 50 && player.y > game.bugs[i].y && player.y < +game.bugs[i].y + 50) {
-        console.log('Player ' + player.id + ' is on bug ' + i);
+      if (player.x > game.bugs[i].x && player.x < +game.bugs[i].x + 50 && player.y > game.bugs[i].y && player.y < +game.bugs[i].y + 50 && (player.holding === i || player.holding === 0)) {
+        // console.log('Player ' + player.id + ' is on bug ' + i);
         game.bugs[i].heldBy = player.homeZone;
+        player.holding = i;
         game.bugs[i].x = player.x - 10;
         game.bugs[i].y = player.y - 10;
       } else {

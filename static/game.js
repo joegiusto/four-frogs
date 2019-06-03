@@ -108,7 +108,7 @@ else {
             movement.score = true;
             break;
           case 32: // Tongue
-            movement.tongue = !movement.tongue;
+            movement.tongue = true;
             break;
         }
       });
@@ -132,25 +132,13 @@ else {
           case 39: // ArrowRight
             movement.rotateRight = false;
             break;
+          case 32: // Tongue
+            movement.tongue = false;
+            break;
         }
       });
 
     socket.emit( 'new player', { nickname: getCookie("nickname") } );
-
-    socket.on('bugs', function(data) {
-      document.getElementById('bug-1-info').innerHTML = 'X:' + data[0].x + ' Y:' + data[0].y + ' Holder:' + data[0].heldBy;
-      document.getElementById('bug-2-info').innerHTML = 'X:' + data[1].x + ' Y:' + data[1].y + ' Holder:' + data[1].heldBy;
-      document.getElementById('bug-3-info').innerHTML = 'X:' + data[2].x + ' Y:' + data[2].y + ' Holder:' + data[2].heldBy;
-      document.getElementById('bug-4-info').innerHTML = 'X:' + data[3].x + ' Y:' + data[3].y + ' Holder:' + data[3].heldBy;
-      document.getElementById('bug-5-info').innerHTML = 'X:' + data[4].x + ' Y:' + data[4].y + ' Holder:' + data[4].heldBy;
-      document.getElementById('bug-6-info').innerHTML = 'X:' + data[5].x + ' Y:' + data[5].y + ' Holder:' + data[5].heldBy;
-      document.getElementById('bug-7-info').innerHTML = 'X:' + data[6].x + ' Y:' + data[6].y + ' Holder:' + data[6].heldBy;
-      document.getElementById('bug-8-info').innerHTML = 'X:' + data[7].x + ' Y:' + data[7].y + ' Holder:' + data[7].heldBy;
-      document.getElementById('bug-9-info').innerHTML = 'X:' + data[8].x + ' Y:' + data[8].y + ' Holder:' + data[8].heldBy;
-      document.getElementById('bug-10-info').innerHTML = 'X:' + data[9].x + ' Y:' + data[9].y + ' Holder:' + data[9].heldBy;
-      document.getElementById('bug-11-info').innerHTML = 'X:' + data[10].x + ' Y:' + data[10].y + ' Holder:' + data[10].heldBy;
-      document.getElementById('bug-12-info').innerHTML = 'X:' + data[11].x + ' Y:' + data[11].y + ' Holder:' + data[11].heldBy;
-    });
 
     setInterval(function() {
       socket.emit('movement', movement);
@@ -187,8 +175,6 @@ else {
         Math.floor(Math.random() * 5)
       );
     }
-
-    
 
     socket.on('state', function(players, bugs) {
 
@@ -328,14 +314,11 @@ else {
 
       for (i = 0; i < bugs.length; i++) {
 
-        if (bugs[i].heldBy != 'No one') {
-          var img = document.getElementById( "bug-" + bugs[i].bugType );
-          context.drawImage(img, bugs[i].x, bugs[i].y, 50, 50);
-          context.strokeStyle = "red";
-          context.stroke();
-        }
-          var img = document.getElementById( "bug-" + bugs[i].bugType );
-          context.drawImage(img, bugs[i].x, bugs[i].y, 50, 50);
+        var img = document.getElementById( "bug-" + bugs[i].bugType );
+        context.drawImage(img, bugs[i].x, bugs[i].y, 50, 50);
+        var player = i;
+        document.getElementById('bug-' + (i + 1) +'-info').innerHTML = 'X:' + bugs[i].x + ' Y:' + bugs[i].y + ' Holder:' + bugs[i].heldBy;
+        
       }
 
       // console.log(players);
@@ -378,9 +361,8 @@ else {
       // document.getElementById('playerThreeId').innerHTML = players[ keyNames[2] ].id || 'blank';
       // document.getElementById('playerFourId').innerHTML = players[ keyNames[3] ].id || 'blank';
 
-      try {
-        
-        stats_1.innerHTML= 'X:' + players[ keyNames[0] ].x + ' Y: ' + players[ keyNames[0] ].y + ' R:' + players[ keyNames[0] ].r + ' Score:' + players[ keyNames[0] ].score + '<br>Zone:' + players[ keyNames[0] ].zone + ' Holding:' + players[ keyNames[0] ].holding + ' Tongue:' + players[ keyNames[0] ].tongue;
+      try {       
+        stats_1.innerHTML= 'X:' + players[ keyNames[0] ].x + ' Y: ' + players[ keyNames[0] ].y + ' R:' + players[ keyNames[0] ].r + ' Score:' + players[ keyNames[0] ].score +  ' Hold:' + players[ keyNames[0] ].canHold + '<br>Zone:' + players[ keyNames[0] ].zone + ' Holding:' + players[ keyNames[0] ].holding + ' Tongue:' + players[ keyNames[0] ].tongue;
         stats_2.innerHTML= 'X:' + players[ keyNames[1] ].x + ' Y: ' + players[ keyNames[1] ].y + ' R:' + players[ keyNames[1] ].r + ' Score:' + players[ keyNames[1] ].score + '<br>Zone:' + players[ keyNames[1] ].zone + ' Holding:' + players[ keyNames[1] ].holding;
         stats_3.innerHTML= 'X:' + players[ keyNames[2] ].x + ' Y: ' + players[ keyNames[2] ].y + ' R:' + players[ keyNames[2] ].r + ' Score:' + players[ keyNames[2] ].score + '<br>Zone:' + players[ keyNames[2] ].zone + ' Holding:' + players[ keyNames[2] ].holding;
         stats_4.innerHTML= 'X:' + players[ keyNames[3] ].x + ' Y: ' + players[ keyNames[3] ].y + ' R:' + players[ keyNames[3] ].r + ' Score:' + players[ keyNames[3] ].score + '<br>Zone:' + players[ keyNames[3] ].zone + ' Holding:' + players[ keyNames[3] ].holding;
