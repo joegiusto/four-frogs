@@ -190,7 +190,8 @@ else {
 
     
 
-    socket.on('state', function(players) {
+    socket.on('state', function(players, bugs) {
+
       context.clearRect(0, 0, 800, 800);
 
       context.fillStyle='rgba(255,105,97,.5)'; 
@@ -227,23 +228,24 @@ else {
       var img = document.getElementById("padGreen");
       // context.drawImage(img, 0, 800 - 160);
 
-      var img = document.getElementById("bug-1");
-      context.drawImage(img, 10, 10, 50, 50);
+      // Now Serve side as it should be, will remove shortly
+      // var img = document.getElementById("bug-1");
+      // context.drawImage(img, 10, 10, 50, 50);
 
-      var img = document.getElementById("bug-2");
-      context.drawImage(img, 10, 75, 50, 50);
+      // var img = document.getElementById("bug-2");
+      // context.drawImage(img, 10, 75, 50, 50);
 
-      var img = document.getElementById("bug-3");
-      context.drawImage(img, 75, 10, 50, 50);
+      // var img = document.getElementById("bug-3");
+      // context.drawImage(img, 75, 10, 50, 50);
 
-      var img = document.getElementById("bug-4");
-      context.drawImage(img, 800 - 60, 10, 50, 50);
+      // var img = document.getElementById("bug-4");
+      // context.drawImage(img, 800 - 60, 10, 50, 50);
 
-      var img = document.getElementById("bug-5");
-      context.drawImage(img, 800 - 135, 10, 50, 50);
+      // var img = document.getElementById("bug-5");
+      // context.drawImage(img, 800 - 135, 10, 50, 50);
 
-      var img = document.getElementById("bug-6");
-      context.drawImage(img, 800 - 60, 75, 50, 50);
+      // var img = document.getElementById("bug-6");
+      // context.drawImage(img, 800 - 60, 75, 50, 50);
 
       // var img = document.getElementById("bug-7");
       // context.drawImage(img, 75, 10, 50, 50);
@@ -322,6 +324,18 @@ else {
         context.fillStyle = "#000";
         context.fillText(player.nickname, player.x, player.y + -5);
 
+      }
+
+      for (i = 0; i < bugs.length; i++) {
+
+        if (bugs[i].heldBy != 'No one') {
+          var img = document.getElementById( "bug-" + bugs[i].bugType );
+          context.drawImage(img, bugs[i].x, bugs[i].y, 50, 50);
+          context.strokeStyle = "red";
+          context.stroke();
+        }
+          var img = document.getElementById( "bug-" + bugs[i].bugType );
+          context.drawImage(img, bugs[i].x, bugs[i].y, 50, 50);
       }
 
       // console.log(players);

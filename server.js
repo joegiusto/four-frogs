@@ -60,18 +60,18 @@ var game = {
 }
 
 bugStart = [
-  '10,20', 
-  '10,20',
-  '10,20',
-  '10,20',
-  '10,20',
-  '10,20',
-  '10,20',
-  '10,20',
-  '10,20',
-  '10,20',
-  '10,20',
-  '10,20',
+  '10,10',
+  '10,75',
+  '75,10',
+  '740,10',
+  '665,10',
+  '740,75',
+  '10,745',
+  '10,665',
+  '75,745',
+  '745,745',
+  '745,665',
+  '665,745',
 ];
 
 for (i = 0; i < 12; i++) {
@@ -80,7 +80,7 @@ for (i = 0; i < 12; i++) {
     heldBy: 'No One',
     x: bugStart[i].split(',')[0],
     y: bugStart[i].split(',')[1],
-    bugType: Math.floor((Math.random() * 6) + 1)
+    bugType: Math.floor((Math.random() * 8) + 1)
   })
 }
 
@@ -126,6 +126,7 @@ io.on('connection', function(socket) {
         zone: "red",
         homeZone: "red",
         holding: 0,
+        canHold: true,
         tongue: false
       };
     } else if (ObjectLength(players) == 1) {
@@ -151,6 +152,8 @@ io.on('connection', function(socket) {
         active: false,
         x: 80,
         y: 720,
+        xStart: 80,
+        yStart: 720,
         r: 0,
         score: 0,
         color: "Green",
@@ -167,6 +170,8 @@ io.on('connection', function(socket) {
         active: false,
         x: 720,
         y: 720,
+        xStart: 720,
+        yStart: 720,
         r: 0,
         score: 0,
         color: "#e0c900",
@@ -263,6 +268,46 @@ io.on('connection', function(socket) {
       player.zone = "yellow";
     }
 
+    var keyNames = Object.keys(players);
+
+    for ( i = 0; i < 4; i++ ) {
+      
+      for ( j = 0; j < 4; j++ ) {
+        
+        // console.log( i + '-' + j);
+
+        try {
+          if ( players[keyNames[i]].x > players[keyNames[j]].x && players[keyNames[i]].x < +players[keyNames[j]].x + 50 && players[keyNames[i]].y > players[keyNames[j]].y && players[keyNames[i]].y < +players[keyNames[j]].y + 50) {
+            console.log(i + '-' + j + ' Collided');
+            if ( players[keyNames[i]].homeZone === players[keyNames[i]].zone && players[keyNames[i]].zone === players[keyNames[j]].zone) {
+              console.log('Send player ' + j + ' back to home zone');
+              players[keyNames[j]].x = players[keyNames[j]].xStart;
+              players[keyNames[j]].y = players[keyNames[j]].yStart;
+            }
+          }
+        }
+        catch {
+          console.log('Lobby not full')
+        }
+
+      }
+
+    }
+
+    // console.log('player ' + player.id + ' is moving');
+    for ( i = 0; i < game.bugs.length; i++ ) {
+
+      if (player.x > game.bugs[i].x && player.x < +game.bugs[i].x + 50 && player.y > game.bugs[i].y && player.y < +game.bugs[i].y + 50) {
+        console.log('Player ' + player.id + ' is on bug ' + i);
+        game.bugs[i].heldBy = player.homeZone;
+        game.bugs[i].x = player.x - 10;
+        game.bugs[i].y = player.y - 10;
+      } else {
+        game.bugs[i].heldBy = 'No one';
+      }
+
+    }
+
     // socket.on('playerTagged', function(id) {
     //   players[id].x = players[id].xStart;
     //   players[id].y = players[id].yStart;
@@ -295,7 +340,7 @@ io.on('connection', function(socket) {
 
 setInterval(function() {
 
-  io.sockets.emit('state', players);
+  io.sockets.emit('state', players, game.bugs);
 
 }, 1000 / 60);
 
