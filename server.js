@@ -37,21 +37,6 @@ server.listen(8081, function() {
 io.on('connection', function(socket) {
 });
 
-// setInterval(function() {
-//   io.sockets.emit('message', 'hi!');
-// }, 1000);
-
-// function getRandomColor() {
-//   var letters = '0123456789ABCDEF';
-//   var color = '#';
-//   for (var i = 0; i < 6; i++) {
-//     color += letters[Math.floor(Math.random() * 16)];
-//   }
-//   return color;
-// }
-
-// var onlinePlayerCount = 0;
-
 var game = {
   active: false,
   players: {},
@@ -106,7 +91,6 @@ function ObjectLength( object ) {
   }
   return length;
 };
-
 
 io.on('connection', function(socket) {
 
@@ -328,32 +312,6 @@ io.on('connection', function(socket) {
 
     }
 
-    // socket.on('playerTagged', function(id) {
-    //   players[id].x = players[id].xStart;
-    //   players[id].y = players[id].yStart;
-    //   players[id].health = players[id].health - 33;
-    //   console.log("Fired" + id);
-    // });
-
-  });
-
-  // socket.on('getPlayerLocations', function(data) {
-  //   console.log(playerID.player1);
-  //   console.log(playerID.player2);
-  //   console.log(playerID.player3);
-  //   console.log(playerID.player4);
-  // });
-
-  socket.on('disconnect', function() {
-    // players[socket.id] = {
-    //   x: 0,
-    //   y: 0,
-    //   color: "white"
-    // };
-    // onlinePlayerCount--;
-    console.log('Player Disconnected! There are/is now ' + 'onlinePlayerCount' + ' player/s online.');
-    // io.sockets.emit('playerCount', onlinePlayerCount);
-    io.sockets.emit('disconnect');
   });
 
 });
@@ -367,6 +325,9 @@ setInterval(function() {
 io.on('connection', function(socket) {
   // other handlers ...
   socket.on('disconnect', function() {
+
+    console.log('Player Disconnected! There are/is now ' + 'onlinePlayerCount' + ' player/s online.');
+    io.sockets.emit('disconnect');
 
     if (game.active === true) {
       players[socket.id] = {

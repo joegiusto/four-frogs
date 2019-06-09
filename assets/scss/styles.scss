@@ -1,3 +1,21 @@
+* {
+  color: #000000;
+  // font-size: 25px;
+}
+
+label {
+  font-size: 1.5rem;
+}
+
+body {
+  background-color: rgb(255, 255, 255);
+  margin: 0px;
+}
+
+.room-time {
+  font-size: 1.1rem;
+}
+
 #canvas {
   width: 100%;
   height: auto;
@@ -76,15 +94,6 @@
   }
 }
 
-body {
-  background-color: rgb(255, 255, 255);
-  margin: 0px;
-}
-
-* {
-  color: black;
-}
-
 #startScreen, #gameScreen {
   height: 90vh;
   position: relative;
@@ -113,11 +122,16 @@ body {
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
   background-color: rgba(152, 200, 58, 0.56);
-  padding: 2rem 2rem;
+  padding: 1.0rem 1rem;
   border-style: solid;
   border-width: 3px;
   border-color: #814d23;
   border-radius: 5px;
+  max-width: 450px;
+  text-align: center;
+  .active {
+    background-color: rgb(255, 189, 132)!important;
+  }
 }
 
 .btn-success {

@@ -182,63 +182,21 @@ else {
 
       context.fillStyle='rgba(255,105,97,.5)'; 
       context.fillRect(0, 0, 400, 400);
-      // context.fillStyle='#ff4747'; 
-      // context.fillRect(0, 0, 200, 200);
   
       context.fillStyle='rgba(173,216,230,.5)'; 
       context.fillRect(400, 0, 400, 400);
-      // context.fillStyle='#25b1dd'; 
-      // context.fillRect(600, 0, 200, 200);
   
       context.fillStyle='rgba(144,238,144,.5)'; 
       context.fillRect(0, 400, 400, 400);
-      // context.fillStyle='#28e228'; 
-      // context.fillRect(0, 600, 200, 200);
   
       context.fillStyle='rgba(239,239,143,.5)'; 
       context.fillRect(400, 400, 400, 400);
-      // context.fillStyle='#eded50'; 
-      // context.fillRect(600, 600, 200, 200);
 
       drawRotated(0, 0, 320, "Red");
       drawRotated(800 - 160, 0, 30, "Blue");
-      drawRotated(0, 800 - 160, 225, "Green");;
+      drawRotated(0, 800 - 160, 225, "Green");
       drawRotated(800 - 160, 800 - 160, 145, "Yellow");
 
-      var img = document.getElementById("padRed");
-      // context.drawImage(img, 0, 0);
-      var img = document.getElementById("padBlue");
-      // context.drawImage(img, 800 - 160, 0);
-      var img = document.getElementById("padYellow");
-      // context.drawImage(img, 800 - 160, 800 - 160);
-      var img = document.getElementById("padGreen");
-      // context.drawImage(img, 0, 800 - 160);
-
-      // Now Serve side as it should be, will remove shortly
-      // var img = document.getElementById("bug-1");
-      // context.drawImage(img, 10, 10, 50, 50);
-
-      // var img = document.getElementById("bug-2");
-      // context.drawImage(img, 10, 75, 50, 50);
-
-      // var img = document.getElementById("bug-3");
-      // context.drawImage(img, 75, 10, 50, 50);
-
-      // var img = document.getElementById("bug-4");
-      // context.drawImage(img, 800 - 60, 10, 50, 50);
-
-      // var img = document.getElementById("bug-5");
-      // context.drawImage(img, 800 - 135, 10, 50, 50);
-
-      // var img = document.getElementById("bug-6");
-      // context.drawImage(img, 800 - 60, 75, 50, 50);
-
-      // var img = document.getElementById("bug-7");
-      // context.drawImage(img, 75, 10, 50, 50);
-
-      // var img = document.getElementById("bug-8");
-      // context.drawImage(img, 425, 425, 50, 50);
-      
       function drawRotated(x, y, degrees, color) {
         x = x + 80;
         y = y + 80;
