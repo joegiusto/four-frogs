@@ -4,6 +4,7 @@
   <title>Four Frogs</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="Cache-control" content="private">
 
   <link rel="shortcut icon" href="assets/favicon.png">
 
@@ -24,13 +25,52 @@
   <section id="gameScreen">
     <div id="startScreen_background"></div>
 
+    <div class="scoreboard-container d-none">
+      <div class="scoreboard-background"></div>
+      <div class="scoreboard">
+        <h2 class="mt-0 text-center">Game Results</h2>
+        <h4 class="mt-0 text-center">Winner: Joey!</h4>
+        <hr>
+
+        <div class="text-center">
+          <div class="player-tag">
+            <div>Red Player: <span class="scoreboard-nickname out">Example</span></div>
+            <div class="score">Score: 425</div>
+          </div>
+  
+          <div class="player-tag">
+            <div>Blue Player: <span class="scoreboard-nickname">Joey</span></div>
+            <div class="score">Score: 550</div>
+          </div>
+  
+          <div class="player-tag">
+            <div>Green Player: <span class="scoreboard-nickname out">Example</span></div>
+            <div class="score">Score: 25</div>
+          </div>
+  
+          <div class="player-tag">
+            <div>Yellow Player: <span class="scoreboard-nickname out">Example</span></div>
+            <div class="score">Score: 50</div>
+          </div>
+        </div>
+        
+        <hr>
+        <h5 class="mt-0 text-center">Lobby Will Restart</h5>
+        <h5 class="mt-0 text-center"><span id="scoreboard-timer">1:00</span></h5>
+      </div>
+    </div>
+
     <div class="container-fluid h-100">
       <div class="row h-100">
 
         <div class="col-12 col-xl-6 my-auto order-xl-2">
 
-          <!-- Shit Lags the site -->
+          <!-- Lags the site, delay. -->
           <!-- <img class="img-fluid ripple" src="./assets/ripple.gif" alt=""> -->
+
+          <div class="hidden-timer">
+            <span id="time_left">Waiting...</span>
+          </div>
 
           <canvas id="canvas"></canvas>
 
@@ -52,10 +92,10 @@
                 <h5>Players</h5>
                 <h5><span id="playerCount">0</span>/4</h5>
               </div>
-              <p>Red - <span id="lobby_1"></span></p>
-              <p>Blue - <span id="lobby_2"></span></p>
-              <p>Green - <span id="lobby_3"></span></p>
-              <p>Yellow - <span id="lobby_4"></span></p>
+              <!-- <p>Red - <span id="lobby_1"></span></p> -->
+              <!-- <p>Blue - <span id="lobby_2"></span></p> -->
+              <!-- <p>Green - <span id="lobby_3"></span></p> -->
+              <!-- <p>Yellow - <span id="lobby_4"></span></p> -->
             </div>
             
             <div class="panel-content-group" style="flex-grow: 1;">
@@ -63,25 +103,25 @@
                 <h5>Specplayers</h5>
                 <h5>0</h5>
               </div>
-              
-              <p>Bug-1 - <span id='bug-1-info'></span></p>
-              <p>Bug-2 - <span id='bug-2-info'></span></p>
-              <p>Bug-3 - <span id='bug-3-info'></span></p>
-              <br>
-              <p>Bug-4 - <span id='bug-4-info'></span></p>
-              <p>Bug-5 - <span id='bug-5-info'></span></p>
-              <p>Bug-6 - <span id='bug-6-info'></span></p>
-              <br>
-              <p>Bug-7 - <span id='bug-7-info'></span></p>
-              <p>Bug-8 - <span id='bug-8-info'></span></p>
-              <p>Bug-9 - <span id='bug-9-info'></span></p>
-              <br>
-              <p>Bug-10 - <span id='bug-10-info'></span></p>
-              <p>Bug-11 - <span id='bug-11-info'></span></p>
-              <p>Bug-12 - <span id='bug-12-info'></span></p>
 
               <canvas id="specplayers"></canvas>
   
+            </div>
+
+            <div class="panel-content-group debug">
+              <h5>Debug Info</h5>
+              <p>Bug-1 - <span id='bug-1-info'></span></p>
+              <p>Bug-2 - <span id='bug-2-info'></span></p>
+              <p>Bug-3 - <span id='bug-3-info'></span></p>
+              <p>Bug-4 - <span id='bug-4-info'></span></p>
+              <p>Bug-5 - <span id='bug-5-info'></span></p>
+              <p>Bug-6 - <span id='bug-6-info'></span></p>
+              <p>Bug-7 - <span id='bug-7-info'></span></p>
+              <p>Bug-8 - <span id='bug-8-info'></span></p>
+              <p>Bug-9 - <span id='bug-9-info'></span></p>
+              <p>Bug-10 - <span id='bug-10-info'></span></p>
+              <p>Bug-11 - <span id='bug-11-info'></span></p>
+              <p>Bug-12 - <span id='bug-12-info'></span></p>
             </div>
 
             <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 2rem;">
@@ -98,75 +138,97 @@
           <div class="panel panel-right">
 
             <div class="panel-content-group">
-              <h5>Red Player</h5>
-              <div id="playerOneId">id</div>
+              <h5><span id='lobby_1'>Red Player</span> <span class="text-muted" id="playerOneId"></span></h5>
               <span id="stats_1"></span>
               
-              <div class="d-inline-block w-50">
-                <div>Health:</div>
-                <div class="progress">
-                  <div class="progress-bar progress-bar-red" style='width: 100%;' id="redHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
+              <div class="dual-display">
 
-              <div class="d-inline-block w-50">
-                <div>Resources:</div>
-                <div class="progress">
-                  <div class="progress-bar progress-bar-red" id="redResource" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  <div class="content">
+                    Health:
+                    <div class="progress w-100">
+                      <div class="progress-bar progress-bar-red" style='width: 100%;' id="redHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+    
+                  <div class="content">
+                    Insects:
+                    <div class="bugIcons d-block" id="list-1">
+
+                    </div>
+                  </div>
+                  
                 </div>
-              </div>
 
             </div>
   
             <div class="panel-content-group">
-              <h5>Blue Player</h5>
-              <div id="playerTwoId">id</div>
+              <h5><span id='lobby_2'>Blue Player</span> <span class="text-muted" id="playerTwoId"></span></h5>
               <span id="stats_2"></span>
-              <br>
-              Health:
 
-              <div class="progress w-50">
-                <div class="progress-bar progress-bar-blue" style='width: 100%;' id="blueHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-              Resources:
+              <div class="dual-display">
 
-              <div class="progress w-50">
-                <div class="progress-bar progress-bar-blue" id="blueResource" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="content">
+                  Health:
+                  <div class="progress w-100">
+                    <div class="progress-bar progress-bar-blue" style='width: 100%;' id="blueHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+  
+                <div class="content">
+                  Insects:
+                  <div class="bugIcons d-block" id="list-2">
+
+                  </div>
+                </div>
+
               </div>
+
             </div>
   
             <div class="panel-content-group">
-              <h5>Green Player</h5>
-              <div id="playerThreeId">id</div>
+              <h5><span id='lobby_3'>Green Player</span> <span class="text-muted" id="playerThreeId"></span></h5>
               <span id="stats_3"></span>
-              <br>
-              Health:
 
-              <div class="progress w-50">
-                <div class="progress-bar progress-bar-green" style='width: 100%;' id="greenHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-              Resources:
+              <div class="dual-display">
+                <div class="content">
+                  Health:
+                  <div class="progress w-100">
+                    <div class="progress-bar progress-bar-green" style='width: 100%;' id="greenHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+  
+                <div class="content">
+                  Insects:
+                  <div class="bugIcons d-block" id="list-3">
 
-              <div class="progress w-50">
-                <div class="progress-bar progress-bar-green" id="greenResource" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
               </div>
+
             </div>
   
             <div class="panel-content-group">
-              <h5>Yellow Player</h5>
-              <div id="playerFourId">id</div>
+              <h5><span id='lobby_4'>Yellow Player</span> <span class="text-muted" id="playerFourId"></span></h5>
               <span id="stats_4"></span>
-              <br>
-              Health:
 
-              <div class="progress w-50">
-                <div class="progress-bar progress-bar-yellow" style='width: 100%;' id="yellowHealth" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-              Resources:
+              <div class="dual-display">
 
-              <div class="progress w-50">
-                <div class="progress-bar progress-bar-yellow" id="yellowResource" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="content">
+                  Health:
+                  <div class="progress w-100">
+                    <div class="progress-bar progress-bar-yellow" style='width: 100%;' id="yellowHealth" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+  
+                <div class="content">
+                  Insects:
+                  <div class="bugIcons d-block" id="list-4">
+
+                  </div>
+                </div>
+                
               </div>
+
             </div>
 
             <div class="space-fill" style="flex-grow: 1;"></div>
@@ -205,6 +267,9 @@
   <img style="display: none;" id="bug-6" src="assets/img/bug-6.png" width="30">
   <img style="display: none;" id="bug-7" src="assets/img/bug-7.png" width="30">
   <img style="display: none;" id="bug-8" src="assets/img/bug-8.png" width="30">
+
+  <img style="display: none;" id="powerup-1" src="assets/img/powerup.jpg" width="30">
+  <img style="display: none;" id="health" src="assets/img/health.jpg" width="30">
 
   <!-- Modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

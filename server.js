@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.post('/', function (req, res) {
   const body = req.body.Body
   res.set('Content-Type', 'text/plain')
+  res.set('Cache-Control', 'private, max-age=86400') // one year
   res.send(`You sent: ${body} to Express`)
 })
 
@@ -39,11 +40,59 @@ io.on('connection', function(socket) {
 
 var game = {
   active: false,
+  stage: 0,
   players: {},
   specPlayers: {},
-  bugs: []
+  bugs: [],
+  insectTrack: [
+    [],
+    [],
+    [],
+    []
+  ],
+  powerups: [
+    {
+      id: 0,
+      name: 'Tough Guy',
+      visible: false,
+    },
+    {
+      id: 1,
+      name: 'Muddy Water',
+      visible: false,
+    },
+    {
+      id: 2,
+      name: 'Stinky Frog',
+      visible: false,
+    },
+    {
+      id: 3,
+      name: 'Big Taddy',
+      visible: false,
+    },
+    {
+      id: 4,
+      name: 'Sphere of Influence',
+      visible: false,
+    },
+    {
+      id: 4,
+      name: 'Lickity',
+      visible: false,
+    },
+    {
+      id: 5,
+      name: 'Health Potion',
+      visible: false,
+    }
+  ]
 }
 
+
+
+// Fill bugs array on server start
+// Bug X and Y locations
 bugStart = [
   '10,10',
   '10,75',
@@ -58,29 +107,79 @@ bugStart = [
   '745,665',
   '665,745',
 ];
-
 for (i = 0; i < 12; i++) {
   game.bugs.push({
     held: false,
     heldBy: 'No One',
     x: bugStart[i].split(',')[0],
     y: bugStart[i].split(',')[1],
-    bugType: Math.floor((Math.random() * 8) + 1)
+    bugType: Math.floor((Math.random() * 8) + 1),
+    pad: 'none'
   })
 }
 
-function canMoveReset(player) {
+gameTime = 0;
+scoreboardTime = 0;
+
+startGame();
+
+function startGame() {
+  setInterval(function(){ console.log("Hello"); }, 3000);
+}
+
+gameTimer();
+function gameTimer() {
+
+  setTimeout(function () {
+    gameTime++
+    console.log(gameTime);
+    if ( gameTime >= 50 ) {
+      console.log('Game over');
+    } else {
+      // Recall function
+      gameTimer();
+    }
+
+  }, 1000);
+}
+
+// Called on the tagged player, freezes them then thaws them after period of time.
+function playerTagged(player) {
+  player.canMove = false;
   setTimeout(function () {
     player.canMove = true;
   }, 1500);
 }
 
+// Called on player that is out.
+function kill(player) {
+  player.canMove = false;
+  player.color = "white";
+  player.nickname = "Out";
+}
+
+// Finished game handleing.
+function gameOver(reason) {
+  player.canMove = false;
+  player.color = "white";
+  player.nickname = "Out";
+
+  switch(reason) {
+    case 'timeOut':
+      console.log('Game time limit reached');
+      break;
+    case 'allOut':
+      console.log('All other players were eliminated');
+      break;
+    default:
+      console.log('Why was game over called?');
+  }
+
+}
+
 console.log(game);
 
 var players = {};
-// var playerID = [
-
-// ];
 
 function ObjectLength( object ) {
   var length = 0;
@@ -207,7 +306,7 @@ io.on('connection', function(socket) {
 
     var player = players[socket.id] || {};
 
-    if (player.canMove === true) {
+    if ( player.canMove === true ) {
       if (data.left && player.x > 5) {
         player.x -= playerSpeed;
       }
@@ -224,6 +323,7 @@ io.on('connection', function(socket) {
         player.y += playerSpeed;
       }
     }
+    
 
     if (data.rotateLeft) {
       player.r -= 5;
@@ -274,8 +374,6 @@ io.on('connection', function(socket) {
     for ( i = 0; i < 4; i++ ) {
       
       for ( j = 0; j < 4; j++ ) {
-        
-        // console.log( i + '-' + j);
 
         try {
           if ( players[keyNames[i]].x > players[keyNames[j]].x && players[keyNames[i]].x < +players[keyNames[j]].x + 50 && players[keyNames[i]].y > players[keyNames[j]].y && players[keyNames[i]].y < +players[keyNames[j]].y + 50) {
@@ -284,8 +382,17 @@ io.on('connection', function(socket) {
               console.log('Send player ' + j + ' back to home zone');
               players[keyNames[j]].x = players[keyNames[j]].xStart;
               players[keyNames[j]].y = players[keyNames[j]].yStart;
-              players[keyNames[j]].canMove = false;
-              canMoveReset(players[keyNames[j]]);
+              players[keyNames[j]].health = players[keyNames[j]].health - 33.5;
+              if ( players[keyNames[j]].health <= 0 ) {
+                kill(players[keyNames[j]]);
+              } else {
+                playerTagged(players[keyNames[j]]);
+              }
+            } else {
+              console.log('Collide but not in zone?');
+              console.log(players[keyNames[i]].homeZone);
+              console.log(players[keyNames[i]].zone);
+              console.log(players[keyNames[j]].zone);
             }
           }
         }
@@ -297,8 +404,36 @@ io.on('connection', function(socket) {
 
     }
 
-    // console.log('player ' + player.id + ' is moving');
+    game.insectTrack[0] = [];
+    game.insectTrack[1] = [];
+    game.insectTrack[2] = [];
+    game.insectTrack[3] = [];
+
     for ( i = 0; i < game.bugs.length; i++ ) {
+
+      if (game.bugs[i].x < 160 && game.bugs[i].y < 160) {
+        game.bugs[i].pad = "red";
+        // redList.push(game.bugs[i].bugType);
+        game.insectTrack[0].push(game.bugs[i].bugType);
+
+      } else if (game.bugs[i].x > 640 && game.bugs[i].y < 160) {
+        game.bugs[i].pad = "blue";
+        // blueList.push(game.bugs[i].bugType);
+        game.insectTrack[1].push(game.bugs[i].bugType);
+
+      } else if (game.bugs[i].x < 160 && game.bugs[i].y > 640) {
+        game.bugs[i].pad = "green";
+        // greenList.push(game.bugs[i].bugType);
+        game.insectTrack[2].push(game.bugs[i].bugType);
+
+      } else if(game.bugs[i].x > 640 && game.bugs[i].y > 640) {
+        game.bugs[i].pad = "yellow";
+        // yellowList.push(game.bugs[i].bugType);
+        game.insectTrack[3].push(game.bugs[i].bugType);
+
+      } else {
+        game.bugs[i].pad = "Moving";
+      }
 
       if (player.x > game.bugs[i].x && player.x < +game.bugs[i].x + 50 && player.y > game.bugs[i].y && player.y < +game.bugs[i].y + 50 && (player.holding === i || player.holding === 0)) {
         // console.log('Player ' + player.id + ' is on bug ' + i);
@@ -312,13 +447,20 @@ io.on('connection', function(socket) {
 
     }
 
+    for (i=0; i < 3; i++) {
+      if (game.insectTrack[i].length === 0) {
+        console.log('Player ' + i + ' died');
+        kill(players[keyNames[i]]);
+      }
+    }
+
   });
 
 });
 
 setInterval(function() {
 
-  io.sockets.emit('state', players, game.bugs);
+  io.sockets.emit('state', players, game.bugs, game.insectTrack, game.powerups);
 
 }, 1000 / 60);
 

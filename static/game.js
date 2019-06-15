@@ -52,24 +52,28 @@ else {
 
       try {
         document.getElementById('lobby_1').innerHTML = players[ keyNames[0] ].nickname;
+        document.getElementById('playerOneId').innerHTML = players[ keyNames[0] ].id;
       }
       catch(err) {
         console.log('Red Player is still needed to start the game')
       }
       try {
         document.getElementById('lobby_2').innerHTML = players[ keyNames[1] ].nickname;
+        document.getElementById('playerTwoId').innerHTML = players[ keyNames[1] ].id;
       }
       catch(err) {
         console.log('Blue Player is still needed to start the game')
       }
       try {
         document.getElementById('lobby_3').innerHTML = players[ keyNames[2] ].nickname;
+        document.getElementById('playerThreeId').innerHTML = players[ keyNames[2] ].id;
       }
       catch(err) {
         console.log('Green Player is still needed to start the game')
       }
       try {
         document.getElementById('lobby_4').innerHTML = players[ keyNames[3] ].nickname;
+        document.getElementById('playerFourId').innerHTML = players[ keyNames[3] ].id;
       }
       catch(err) {
         console.log('Yellow Player is still needed to start the game')
@@ -145,17 +149,31 @@ else {
       movement.score = false;
     }, 1000 / 60);
 
+
+    var dots = window.setInterval( function() {
+      var wait = document.getElementsByClassName("wait");
+
+      for (i=0; i < 3; i++) {
+        if ( wait[i].innerHTML.length > 2 ) 
+          wait[i].innerHTML = "";
+        else 
+          wait[i].innerHTML += ".";
+      }
+      
+    }, 600);
+
+
     var stats_1 = document.getElementById('stats_1');
-    stats_1.innerHTML= "No gameplay yet";
+    stats_1.innerHTML= "Waiting On Players<span class='wait'>.</span>";
 
     var stats_2 = document.getElementById('stats_2');
-    stats_2.innerHTML= "No gameplay yet";
+    stats_2.innerHTML= "Waiting On Player<span class='wait'>.</span>";
 
     var stats_3 = document.getElementById('stats_3');
-    stats_3.innerHTML= "No gameplay yet";
+    stats_3.innerHTML= "Waiting On Player<span class='wait'>.</span>";
 
     var stats_4 = document.getElementById('stats_4');
-    stats_4.innerHTML= "No gameplay yet";
+    stats_4.innerHTML= "Waiting On Player<span class='wait'>.</span>";
 
     var canvas = document.getElementById('canvas');
     canvas.width = 800;
@@ -163,20 +181,63 @@ else {
 
     var context = canvas.getContext('2d');
 
-    socket.on('playerID', function(data) {
-      document.getElementById('playerOneId').innerHTML = data[0].id;
-      document.getElementById('playerTwoId').innerHTML = data[1].id;
-      document.getElementById('playerThreeId').innerHTML = data[2].id;
-      document.getElementById('playerFourId').innerHTML = data[3].id;
-    });
-
     function RandomBug() {
       return (
         Math.floor(Math.random() * 5)
       );
     }
 
-    socket.on('state', function(players, bugs) {
+    // x = 10000;
+
+    function gameTimer(duration, display) {
+      var timer = duration, minutes, seconds;
+        setInterval(function () {
+            minutes = parseInt(timer / 60, 10)
+            seconds = parseInt(timer % 60, 10);
+    
+            // Place a 0 back in quotes to float zeros.
+            minutes = minutes < 10 ? "" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+    
+            display.textContent = minutes + ":" + seconds;
+    
+            if (--timer < 0) {
+                timer = duration;
+            }
+        }, 1000);
+    }
+      
+    window.onload = function () {
+      var minutesInSeconds = 60 * 5,
+          display = document.querySelector('#time_left');
+      gameTimer(minutesInSeconds, display);
+    };
+
+    // function scoreboardTimer(duration, display) {
+    //   var timer = duration, minutes, seconds;
+    //     setInterval(function () {
+    //         minutes = parseInt(timer / 60, 10)
+    //         seconds = parseInt(timer % 60, 10);
+    
+    //         // Place a 0 back in quotes to float zeros.
+    //         minutes = minutes < 10 ? "" + minutes : minutes;
+    //         seconds = seconds < 10 ? "0" + seconds : seconds;
+    
+    //         display.textContent = minutes + ":" + seconds;
+    
+    //         if (--timer < 0) {
+    //             timer = duration;
+    //         }
+    //     }, 1000);
+    // }
+
+  //   window.onload = function () {
+  //     var minutesInSeconds = 60 * 1,
+  //         display = document.querySelector('#scoreboard-timer');
+  //     scoreboardTimer(minutesInSeconds, display);
+  // };
+
+    socket.on('state', function(players, bugs, insectTrack, powerups) {
 
       context.clearRect(0, 0, 800, 800);
 
@@ -270,64 +331,109 @@ else {
 
       }
 
+      // context.font = "10px Arial";
+      // context.fillStyle = "#000";
+      // context.fillText( "Health Potion", 400 -25, 400 - 25 - 5 );
+      var img = document.getElementById( "health" );
+      context.drawImage(img, 400-20, 400-20, 40, 40);
+
+      // context.font = "10px Arial";
+      // context.fillStyle = "#000";
+      // context.fillText( "Tough Guy", 305, 275 - 5 );
+      // var img = document.getElementById( "powerup-1" );
+      // context.drawImage(img, 305, 275, 50, 50);
+
+      // context.font = "10px Arial";
+      // context.fillStyle = "#000";
+      // context.fillText( "Muddy Water", 305, 350 - 5 );
+      // var img = document.getElementById( "powerup-1" );
+      // context.drawImage(img, 305, 350, 50, 50);
+
+      // context.font = "10px Arial";
+      // context.fillStyle = "#000";
+      // context.fillText( "Stinky Frog", 380, 275 - 5 );
+      // var img = document.getElementById( "powerup-1" );
+      // context.drawImage(img, 380, 275, 50, 50);
+
+      // context.font = "10px Arial";
+      // context.fillStyle = "#000";
+      // context.fillText( "Big Taddy", 380, 350 - 5 );
+      // var img = document.getElementById( "powerup-1" );
+      // context.drawImage(img, 380, 350, 50, 50);
+
+      // context.font = "10px Arial";
+      // context.fillStyle = "#000";
+      // context.fillText( "Sphere of Influence", 380 + 75, 275 - 5 );
+      // var img = document.getElementById( "powerup-1" );
+      // context.drawImage(img, 380 + 75, 275, 50, 50);
+
+      // context.font = "10px Arial";
+      // context.fillStyle = "#000";
+      // context.fillText( "Lickity", 380 + 75, 350 - 5 );
+      // var img = document.getElementById( "powerup-1" );
+      // context.drawImage(img, 380 + 75, 350, 50, 50);
+
       for (i = 0; i < bugs.length; i++) {
 
         var img = document.getElementById( "bug-" + bugs[i].bugType );
         context.drawImage(img, bugs[i].x, bugs[i].y, 50, 50);
         var player = i;
-        document.getElementById('bug-' + (i + 1) +'-info').innerHTML = 'X:' + bugs[i].x + ' Y:' + bugs[i].y + ' Holder:' + bugs[i].heldBy;
+        document.getElementById('bug-' + (i + 1) +'-info').innerHTML = 'X:' + bugs[i].x + ' Y:' + bugs[i].y + ' Holder:' + bugs[i].heldBy + ' Pad:' + bugs[i].pad;
         
       }
 
-      // console.log(players);
+      
+      for (i=0; i < insectTrack.length; i++) {
 
-      try {
-        // $("#redHealth").css("width", players[keyNames[0] ].health + "%" );
-        // $("#blueHealth").css("width", players[keyNames[1] ].health + "%" );
-        // $("#greenHealth").css("width", players[keyNames[2] ].health + "%" );
-        // $("#yellowHealth").css("width", players[keyNames[3] ].health + "%" );
+        document.getElementById('list-1').innerHTML = '';
+        for (j=0; j < insectTrack[0].length; j++) {
+          if (j != undefined || null) {
+            document.getElementById('list-1').innerHTML = document.getElementById('list-1').innerHTML.concat(' ' + insectTrack[0][j]);
+            // document.getElementById('list-1').innerHTML = document.getElementById('list-1').innerHTML.concat(' ' + '<img src="assets/img/bug-' + insectTrack[0][j] + '.png" width="20">');
+          }
+        }
 
-        if ( players[ keyNames[0] ].x < players[ keyNames[1] ].x + 40 &&
-          players[ keyNames[0] ].x + 40 > players[ keyNames[1] ].x &&
-          players[ keyNames[0] ].y < players[ keyNames[1] ].y + 40 &&
-          players[ keyNames[0] ].y + 40 > players[ keyNames[1] ].y ) {
-           // collision detected!
-           console.log("Collision");
+        document.getElementById('list-2').innerHTML = '';
+        for (j=0; j < insectTrack[1].length; j++) {
+          if (j != undefined || null) {
+            document.getElementById('list-2').innerHTML = document.getElementById('list-2').innerHTML.concat(' ' + insectTrack[1][j]);
+            // document.getElementById('list-2').innerHTML = document.getElementById('list-2').innerHTML.concat(' ' + '<img src="assets/img/bug-' + insectTrack[1][j] + '.png" width="20">');
+          }
+        }
 
-           // Blue tagged in Red Home
-          //  if ( players[ keyNames[1] ].zone == players[ keyNames[0] ].homeZone ) {
-          //   socket.emit('playerTagged', players[ keyNames[1] ].id);
-          //   console.log("Blue tagged in Red Home");
-          //  }
+        document.getElementById('list-3').innerHTML = '';
+        for (j=0; j < insectTrack[2].length; j++) {
+          if (j != undefined || null) {
+            document.getElementById('list-3').innerHTML = document.getElementById('list-3').innerHTML.concat(' ' + insectTrack[2][j]);
+            // document.getElementById('list-3').innerHTML = document.getElementById('list-3').innerHTML.concat(' ' + '<img src="assets/img/bug-' + insectTrack[2][j] + '.png" width="20">');
+          }
+        }
 
-           // Red tagged in Blue Home
-          //  if ( players[ keyNames[0] ].zone == players[ keyNames[1] ].homeZone ) {
-          //   socket.emit('playerTagged', players[ keyNames[0] ].id);
-          //   console.log("Red tagged in Blue Home");
-          //  }
-
-       } else {
-        // No Collision
-       }
+        document.getElementById('list-4').innerHTML = '';
+        for (j=0; j < insectTrack[3].length; j++) {
+          if (j != undefined || null) {
+            document.getElementById('list-4').innerHTML = document.getElementById('list-4').innerHTML.concat(' ' + insectTrack[3][j]);
+            // document.getElementById('list-4').innerHTML = document.getElementById('list-4').innerHTML.concat(' ' + '<img src="assets/img/bug-' + insectTrack[3][j] + '.png" width="20">');
+          }
+        }
+        
       }
-      catch(err) {
-        // console.log("Error: " + err);
-      }
 
-      // document.getElementById('playerOneId').innerHTML = players[ keyNames[0] ].id || 'blank';
-      // document.getElementById('playerTwoId').innerHTML = players[ keyNames[1] ].id || 'blank';
-      // document.getElementById('playerThreeId').innerHTML = players[ keyNames[2] ].id || 'blank';
-      // document.getElementById('playerFourId').innerHTML = players[ keyNames[3] ].id || 'blank';
+      // document.getElementById('list-1').innerHTML= '<img id="bug-1" src="assets/img/bug-1.png" width="20">';
 
       try {       
         stats_1.innerHTML= 'X:' + players[ keyNames[0] ].x + ' Y: ' + players[ keyNames[0] ].y + ' R:' + players[ keyNames[0] ].r + ' Score:' + players[ keyNames[0] ].score +  ' Hold:' + players[ keyNames[0] ].canHold + '<br>Zone:' + players[ keyNames[0] ].zone + ' Holding:' + players[ keyNames[0] ].holding + ' Tongue:' + players[ keyNames[0] ].tongue;
+        document.getElementById('redHealth').innerHTML = players[ keyNames[0] ].health;
         stats_2.innerHTML= 'X:' + players[ keyNames[1] ].x + ' Y: ' + players[ keyNames[1] ].y + ' R:' + players[ keyNames[1] ].r + ' Score:' + players[ keyNames[1] ].score + '<br>Zone:' + players[ keyNames[1] ].zone + ' Holding:' + players[ keyNames[1] ].holding;
+        document.getElementById('blueHealth').innerHTML = players[ keyNames[1] ].health;
         stats_3.innerHTML= 'X:' + players[ keyNames[2] ].x + ' Y: ' + players[ keyNames[2] ].y + ' R:' + players[ keyNames[2] ].r + ' Score:' + players[ keyNames[2] ].score + '<br>Zone:' + players[ keyNames[2] ].zone + ' Holding:' + players[ keyNames[2] ].holding;
+        document.getElementById('greenHealth').innerHTML = players[ keyNames[2] ].health;
         stats_4.innerHTML= 'X:' + players[ keyNames[3] ].x + ' Y: ' + players[ keyNames[3] ].y + ' R:' + players[ keyNames[3] ].r + ' Score:' + players[ keyNames[3] ].score + '<br>Zone:' + players[ keyNames[3] ].zone + ' Holding:' + players[ keyNames[3] ].holding;
+        document.getElementById('yellowHealth').innerHTML = players[ keyNames[3] ].health;
       }
       catch(err) {
         // console.log("Lobby not full yet");
       }
 
     });
-}; //End Else if for cookie check
+};
