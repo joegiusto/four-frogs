@@ -189,29 +189,29 @@ else {
 
     // x = 10000;
 
-    function gameTimer(duration, display) {
-      var timer = duration, minutes, seconds;
-        setInterval(function () {
-            minutes = parseInt(timer / 60, 10)
-            seconds = parseInt(timer % 60, 10);
+    // function gameTimer(duration, display) {
+    //   var timer = duration, minutes, seconds;
+    //     setInterval(function () {
+    //         minutes = parseInt(timer / 60, 10)
+    //         seconds = parseInt(timer % 60, 10);
     
-            // Place a 0 back in quotes to float zeros.
-            minutes = minutes < 10 ? "" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
+    //         // Place a 0 back in quotes to float zeros.
+    //         minutes = minutes < 10 ? "" + minutes : minutes;
+    //         seconds = seconds < 10 ? "0" + seconds : seconds;
     
-            display.textContent = minutes + ":" + seconds;
+    //         display.textContent = minutes + ":" + seconds;
     
-            if (--timer < 0) {
-                timer = duration;
-            }
-        }, 1000);
-    }
+    //         if (--timer < 0) {
+    //             timer = duration;
+    //         }
+    //     }, 1000);
+    // }
       
-    window.onload = function () {
-      var minutesInSeconds = 60 * 5,
-          display = document.querySelector('#time_left');
-      gameTimer(minutesInSeconds, display);
-    };
+    // window.onload = function () {
+    //   var minutesInSeconds = 60 * 5,
+    //       display = document.querySelector('#time_left');
+    //   gameTimer(minutesInSeconds, display);
+    // };
 
     // function scoreboardTimer(duration, display) {
     //   var timer = duration, minutes, seconds;
@@ -237,14 +237,16 @@ else {
   //     scoreboardTimer(minutesInSeconds, display);
   // };
 
-    socket.on('state', function(players, bugs, insectTrack, powerups) {
+    socket.on('state', function(players, bugs, insectTrack, powerups, timer, scoreboardTimer) {
+
+      var keyNames = Object.keys(players);
 
       context.clearRect(0, 0, 800, 800);
 
       context.fillStyle='rgba(255,105,97,.5)'; 
       context.fillRect(0, 0, 400, 400);
   
-      context.fillStyle='rgba(173,216,230,.5)'; 
+      context.fillStyle='rgba(173,216,230,.5)';
       context.fillRect(400, 0, 400, 400);
   
       context.fillStyle='rgba(144,238,144,.5)'; 
@@ -252,6 +254,29 @@ else {
   
       context.fillStyle='rgba(239,239,143,.5)'; 
       context.fillRect(400, 400, 400, 400);
+
+      if (powerups.active.id === 4 ) {
+
+        try {
+          if (players[keyNames[0]].powerup === 4) {
+            context.fillStyle='rgba(255,105,97,.5)'; 
+            context.fillRect(0, 0, 450, 450);
+          } else if (players[keyNames[1]].powerup === 4) {
+            context.fillStyle='rgba(173,216,230,.5)';
+            context.fillRect(400, 0, 350, 450);
+          } else if (players[keyNames[2]].powerup === 4) {
+            context.fillStyle='rgba(144,238,144,.5)'; 
+            context.fillRect(0, 400, 450, 350);
+          } else if (players[keyNames[3]].powerup === 4) {
+            context.fillStyle='rgba(239,239,143,.5)'; 
+            context.fillRect(400, 400, 350, 350);
+          }
+        }
+        catch(err) {
+          
+        }
+        
+      }
 
       drawRotated(0, 0, 320, "Red");
       drawRotated(800 - 160, 0, 30, "Blue");
@@ -281,19 +306,83 @@ else {
         context.restore();
       };
 
-      var keyNames = Object.keys(players);
-
       for (var id in players) {
         var player = players[id];
 
         var playerSize = 40;
+        var draw = 'square';
+
+        switch(player.powerup) {
+          case 0:
+            var playerSize = 60;
+            context.font = "10px Arial";
+            context.fillStyle = "#000";
+            context.textAlign = "center"; 
+            context.fillText('Tough Guy', player.x + playerSize / 2, player.y + 70);
+            break;
+          case 1:
+            context.font = "10px Arial";
+            context.fillStyle = "#000";
+            context.textAlign = "center"; 
+            context.fillText('Muddy Water', player.x + playerSize / 2, player.y + 55);
+            player.color = "#964"
+            break;
+          case 2:
+              context.font = "10px Arial";
+              context.fillStyle = "#000";
+              context.textAlign = "center"; 
+              context.fillText('Stinky Frog', player.x + playerSize / 2, player.y + 55);
+
+              player.color = "#bbb"
+
+              var img = document.getElementById("stink");
+              context.drawImage(img, player.x, player.y - playerSize, 40, 40);
+              break;
+          case 4: 
+            var draw = 'circle';
+            context.font = "10px Arial";
+            context.fillStyle = "#000";
+            context.textAlign = "center"; 
+            context.fillText('Sphere', player.x + playerSize / 2, player.y + 55);
+            break;
+        }
+
+        // Visual Perk Over rides
+        // if (player.powerup === 0 ) {
+        //   var playerSize = 60;
+        //   context.font = "10px Arial";
+        //   context.fillStyle = "#000";
+        //   context.fillText('Tough Guy', player.x, player.y + 90);
+        // }
+
+        // if (player.powerup === 1) {
+        //   console.log('Player detected with Muddy Water')
+        //   context.font = "10px Arial";
+        //   context.fillStyle = "#000";
+        //   context.fillText('Muddy Water', player.x, player.y + 50);
+        // }
+
+        // if (player.powerup === 4) {
+        //   var draw = 'circle';
+        //   context.font = "10px Arial";
+        //   context.fillStyle = "#000";
+        //   context.fillText('Sphere', player.x, player.y + 50);
+        // }
 
         // Circle (Original)
         context.beginPath();
         context.fillStyle = player.color;
-        context.fillRect(player.x, player.y, playerSize, playerSize);
-        // context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
-        context.fill();
+
+        if ( draw === 'square' ) {
+          context.fillRect(player.x, player.y, playerSize, playerSize);
+        } else if ( draw === 'circle' ) {
+          context.save();
+          // Move to the center of the canvas
+          context.translate(playerSize / 2,playerSize / 2);
+          context.arc(player.x, player.y, 25, 0, 2 * Math.PI);
+          context.fill();
+          context.restore();
+        }
 
         // Left Eye
         context.beginPath();
@@ -304,13 +393,13 @@ else {
         // Right Eye
         context.beginPath();
         context.fillStyle = "#000";
-        context.fillRect(player.x + 27.5, player.y + 2.5, 10, 10);
+        context.fillRect(player.x + playerSize - 12.5, player.y + 2.5, 10, 10);
         context.fill();
 
         // Mouf
         context.beginPath();
         context.fillStyle = "#000";
-        context.fillRect(player.x + 5, player.y + 20, 30, 10);
+        context.fillRect(player.x + 5, player.y + 20, playerSize - 10, playerSize / 4);
         context.fill();
 
         // Tongue
@@ -318,60 +407,40 @@ else {
         context.fillStyle = "#FFC0CB";
 
         if (player.tongue == false) {
-          context.fillRect(player.x + 10, player.y + 28, 20, 5);
+          context.fillRect(player.x + 10, player.y + (playerSize / 4 + 15), playerSize- 20 , playerSize / 6);
         } else {
-          context.fillRect(player.x + 10, player.y + 28, 20, 20);
+          context.fillRect(player.x + 10, player.y + (playerSize / 4 + 15), playerSize- 20, playerSize / 2);
         }
         
         context.fill();
 
         context.font = "10px Arial";
         context.fillStyle = "#000";
-        context.fillText(player.nickname, player.x, player.y + -5);
+        context.textAlign = "center"; 
+        // var playerNickname = player.nickname;
+        context.fillText(player.nickname, player.x + (playerSize /2), player.y - 5);
 
       }
 
-      // context.font = "10px Arial";
-      // context.fillStyle = "#000";
-      // context.fillText( "Health Potion", 400 -25, 400 - 25 - 5 );
-      var img = document.getElementById( "health" );
-      context.drawImage(img, 400-20, 400-20, 40, 40);
+
+      if (powerups.active.active === true && powerups.active.id === 5) {
+        var img = document.getElementById( "health" );
+        context.drawImage(img, 400-20, 400-20, 40, 40);
+      } else if (powerups.active.active === true && powerups.active.id != 5) {
+        var img = document.getElementById( "powerup-1" );
+        context.drawImage(img, 400-20, 400-20, 40, 40);
+      };
+
+      // if (powerups.active.active === true) {
+      //   var img = document.getElementById( "powerup" );
+      //   context.drawImage(img, 400-20, 400-20, 40, 40);
+      // };
 
       // context.font = "10px Arial";
       // context.fillStyle = "#000";
       // context.fillText( "Tough Guy", 305, 275 - 5 );
       // var img = document.getElementById( "powerup-1" );
       // context.drawImage(img, 305, 275, 50, 50);
-
-      // context.font = "10px Arial";
-      // context.fillStyle = "#000";
-      // context.fillText( "Muddy Water", 305, 350 - 5 );
-      // var img = document.getElementById( "powerup-1" );
-      // context.drawImage(img, 305, 350, 50, 50);
-
-      // context.font = "10px Arial";
-      // context.fillStyle = "#000";
-      // context.fillText( "Stinky Frog", 380, 275 - 5 );
-      // var img = document.getElementById( "powerup-1" );
-      // context.drawImage(img, 380, 275, 50, 50);
-
-      // context.font = "10px Arial";
-      // context.fillStyle = "#000";
-      // context.fillText( "Big Taddy", 380, 350 - 5 );
-      // var img = document.getElementById( "powerup-1" );
-      // context.drawImage(img, 380, 350, 50, 50);
-
-      // context.font = "10px Arial";
-      // context.fillStyle = "#000";
-      // context.fillText( "Sphere of Influence", 380 + 75, 275 - 5 );
-      // var img = document.getElementById( "powerup-1" );
-      // context.drawImage(img, 380 + 75, 275, 50, 50);
-
-      // context.font = "10px Arial";
-      // context.fillStyle = "#000";
-      // context.fillText( "Lickity", 380 + 75, 350 - 5 );
-      // var img = document.getElementById( "powerup-1" );
-      // context.drawImage(img, 380 + 75, 350, 50, 50);
 
       for (i = 0; i < bugs.length; i++) {
 
@@ -382,6 +451,35 @@ else {
         
       }
 
+      minutes = parseInt(timer / 60, 10)
+      seconds = parseInt(timer % 60, 10);
+
+      // Place a 0 back in quotes to float zeros.
+      minutes = minutes < 10 ? "" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      document.getElementById('time_left').innerHTML = minutes + ":" + seconds;
+
+      if (timer === 0) {
+        $('.scoreboard-container').removeClass('d-none');
+      }
+
+      // --- --- --- --- --- --- --- --- --- --- --- ---
+
+      minutes1 = parseInt(scoreboardTimer / 60, 10)
+      seconds1 = parseInt(scoreboardTimer % 60, 10);
+
+      // Place a 0 back in quotes to float zeros.
+      minutes1 = minutes1 < 10 ? "" + minutes1 : minutes1;
+      seconds1 = seconds1 < 10 ? "0" + seconds1 : seconds1;
+
+      var temp = 30 - seconds1;
+
+      document.getElementById('scoreboard-timer').innerHTML = '0:' + (temp < 10 ? '0' + temp : temp);
+
+      if (scoreboardTimer >= 29) {
+        window.location.replace("../join.html");
+      }
       
       for (i=0; i < insectTrack.length; i++) {
 
@@ -422,7 +520,7 @@ else {
       // document.getElementById('list-1').innerHTML= '<img id="bug-1" src="assets/img/bug-1.png" width="20">';
 
       try {       
-        stats_1.innerHTML= 'X:' + players[ keyNames[0] ].x + ' Y: ' + players[ keyNames[0] ].y + ' R:' + players[ keyNames[0] ].r + ' Score:' + players[ keyNames[0] ].score +  ' Hold:' + players[ keyNames[0] ].canHold + '<br>Zone:' + players[ keyNames[0] ].zone + ' Holding:' + players[ keyNames[0] ].holding + ' Tongue:' + players[ keyNames[0] ].tongue;
+        stats_1.innerHTML= 'P: ' + players[ keyNames[0] ].powerup +' X:' + players[ keyNames[0] ].x + ' Y: ' + players[ keyNames[0] ].y + ' R:' + players[ keyNames[0] ].r + ' Score:' + players[ keyNames[0] ].score +  ' Hold:' + players[ keyNames[0] ].canHold + '<br>Zone:' + players[ keyNames[0] ].zone + ' Holding:' + players[ keyNames[0] ].holding + ' Tongue:' + players[ keyNames[0] ].tongue;
         document.getElementById('redHealth').innerHTML = players[ keyNames[0] ].health;
         stats_2.innerHTML= 'X:' + players[ keyNames[1] ].x + ' Y: ' + players[ keyNames[1] ].y + ' R:' + players[ keyNames[1] ].r + ' Score:' + players[ keyNames[1] ].score + '<br>Zone:' + players[ keyNames[1] ].zone + ' Holding:' + players[ keyNames[1] ].holding;
         document.getElementById('blueHealth').innerHTML = players[ keyNames[1] ].health;

@@ -8,15 +8,15 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-const PORT = process.env.PORT || 5000;
-// app.set('port', 8081);
+// const PORT = process.env.PORT || 5000;
+app.set('port', 8081);
 
 app.use('/static', express.static(__dirname + '/static'));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/', function (req, res) {
   const body = req.body.Body
-  res.set('Content-Type', 'text/plain')
+  res.set('Content-Type', 'text/ plain')
   res.set('Cache-Control', 'private, max-age=86400') // one year
   res.send(`You sent: ${body} to Express`)
 })
@@ -34,75 +34,112 @@ app.use(express.static(__dirname + '/'));
 
 // Starts the server.
 // Old
-// server.listen(8081, function() {
-//   console.log('Starting server on port 8081');
-// });
+server.listen(8081, function() {
+  console.log('Starting server on port 8081');
+});
 // New
-server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+// server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
 });
 
+var debug = {
+  mode: true,
+  
+  powerups: {
+    // Turn off powerup spawning
+    cycle: true,
+    // Spawn specifc powerup (-1 for default)
+    override: 4
+  },
+
+  timeOverride: 600,
+
+  playersToStart: 1
+}
+
 var game = {
   active: false,
   stage: 0,
+  timer: 300,
+  scoreboard: {
+    time: 30
+  },
   players: {},
   specPlayers: {},
   bugs: [],
   insectTrack: [
     [],
-    [],
+    [], 
     [],
     []
   ],
-  powerups: [
-    {
-      id: 0,
-      name: 'Tough Guy',
-      visible: false,
-    },
-    {
-      id: 1,
-      name: 'Muddy Water',
-      visible: false,
-    },
-    {
-      id: 2,
-      name: 'Stinky Frog',
-      visible: false,
-    },
-    {
-      id: 3,
-      name: 'Big Taddy',
-      visible: false,
-    },
-    {
-      id: 4,
-      name: 'Sphere of Influence',
-      visible: false,
-    },
-    {
-      id: 4,
-      name: 'Lickity',
-      visible: false,
-    },
-    {
-      id: 5,
-      name: 'Health Potion',
-      visible: false,
+  powerups: {
+    cycled: [
+      {
+        id: (debug.mode === true ? debug.powerups.override : 0),
+        name: 'Tough Guy',
+      },
+      {
+        id: (debug.mode === true ? debug.powerups.override : 1),
+        name: 'Muddy Water',
+      },
+      {
+        id: (debug.mode === true ? debug.powerups.override : 2),
+        name: 'Stinky Frog',
+      },
+      // {
+      //   id: (debug.mode === true ? debug.powerups.override : 3),
+      //   name: 'Big Taddy',
+      // },
+      {
+        id: (debug.mode === true ? debug.powerups.override : 4),
+        name: 'Sphere of Influence',
+      },
+      // {
+      //   id: (debug.mode === true ? debug.powerup : 5),
+      //   name: 'Lickity Split',
+      // },
+    ],
+    static: [
+      {
+        id: 100,
+        name: 'Health Potion',
+      }
+    ],
+    active: {
+      active: false,
+      id: null
     }
-  ]
+  },
+  // Time at which powerup will spawn
+  powerups_times: [ 298, 240, 180, 120, 60],
+  // Populated on server start
+  powerups_schedule: [],
+  powerups_experation: 45
 }
 
+var gameCopy = game;
 
+for (i=0; i < game.powerups_times.length; i++) {
+  
+  // Random powerup calculator
+  var randomPowerup = Math.floor(Math.random() * game.powerups.cycled.length);
+
+  game.powerups_schedule.push({
+    time: game.powerups_times[i],
+    type: game.powerups.cycled[randomPowerup].id
+  });
+
+}
 
 // Fill bugs array on server start
 // Bug X and Y locations
 bugStart = [
   '10,10',
   '10,75',
-  '75,10',
+  '75,10', 
   '740,10',
   '665,10',
   '740,75',
@@ -124,30 +161,109 @@ for (i = 0; i < 12; i++) {
   })
 }
 
-gameTime = 0;
 scoreboardTime = 0;
 
-startGame();
-
-function startGame() {
-  setInterval(function(){ console.log("Hello"); }, 3000);
-}
-
-gameTimer();
 function gameTimer() {
 
   setTimeout(function () {
-    gameTime++
-    console.log(gameTime);
-    if ( gameTime >= 50 ) {
+    game.timer--;
+
+    if ( game.timer === 0)  {
       console.log('Game over');
+      scoreboard();
     } else {
+
+      function findWithAttr(array, attr, value) {
+        for(var i = 0; i < array.length; i += 1) {
+            if(array[i][attr] === value) {
+                console.log(game.powerups.cycled[array[i].type].name);
+                game.powerups.active.id = array[i].type;
+                return i;         
+            } 
+        }
+        return -1;
+      }
+
+      if (findWithAttr(game.powerups_schedule, 'time', game.timer) != -1) {
+        console.log("Powerup Time");
+        game.powerups.active.active = true;
+      }
+
+      if (findWithAttr(game.powerups_schedule, 'time', game.timer - game.powerups_experation ) != -1) {
+        console.log("Powerup Takeaway Time");
+        game.powerups.active.active = false;
+      }
+
+      // Might take out health so keeping this out for now
+      // if ( gameTime === 30 ) {
+      //   game.powerups.active.active = true;
+      //   game.powerups.active.id = 5;
+      //   console.log('Powerup appear');
+      // }
+
       // Recall function
       gameTimer();
     }
 
   }, 1000);
+};
+
+function scoreboard() {
+  var scorboardTimer = setInterval( function() {
+    console.log(scoreboardTime);
+    scoreboardTime++;
+    if (scoreboardTime >= 30) {
+      console.log('Reseting game');
+      // Game is over, reset all propertys back to start.
+
+      function getConnectedSockets() {
+        return Object.values(io.of("/").connected);
+      }
+      
+      getConnectedSockets().forEach(function(s) {
+          s.disconnect(true);
+      });
+
+      // Reset game object
+      game = gameCopy;
+
+      for (i=0; i < game.powerups_times.length; i++) {
+  
+        // Random powerup calculator
+        var randomPowerup = Math.floor(Math.random() * game.powerups.cycled.length);
+      
+        game.powerups_schedule.push({
+          time: game.powerups_times[i],
+          type: game.powerups.cycled[randomPowerup].id
+        });
+      
+      }
+      
+      // Reset bug locations
+      for (i = 0; i < 12; i++) {
+        game.bugs.push({
+          held: false,
+          heldBy: 'No One',
+          x: bugStart[i].split(',')[0],
+          y: bugStart[i].split(',')[1],
+          bugType: Math.floor((Math.random() * 8) + 1),
+          pad: 'none'
+        })
+      }
+      
+      scoreboardTime = 0;
+
+      clearInterval(scorboardTimer);
+
+      console.log(game.bugs);
+
+      io.sockets.emit('state', players, game.bugs, game.insectTrack, game.powerups, game.timer, scoreboardTime);
+
+    }
+  }, 1000)
 }
+
+
 
 // Called on the tagged player, freezes them then thaws them after period of time.
 function playerTagged(player) {
@@ -217,6 +333,7 @@ io.on('connection', function(socket) {
         zone: "red",
         homeZone: "red",
         holding: 0,
+        powerup: -1,
         canHold: true,
         canMove: true,
         tongue: false
@@ -237,6 +354,7 @@ io.on('connection', function(socket) {
         zone: "blue",
         homeZone: "blue",
         holding: 0,
+        powerup: -1,
         canHold: true,
         canMove: true,
         tongue: false
@@ -257,6 +375,7 @@ io.on('connection', function(socket) {
         zone: "green",
         homeZone: "green",
         holding: 0,
+        powerup: -1,
         canHold: true,
         canMove: true,
         tongue: false
@@ -277,6 +396,7 @@ io.on('connection', function(socket) {
         zone: "yellow",
         homeZone: "yellow",
         holding: 0,
+        powerup: -1,
         canHold: true,
         canMove: true,
         tongue: false
@@ -301,6 +421,11 @@ io.on('connection', function(socket) {
 
     console.log('Player Count')
     console.log(ObjectLength(players));
+
+    // Set back to 4 
+    if (ObjectLength(players) === (debug.mode === true ? debug.playersToStart : 4)) {
+      gameTimer();
+    };
 
   });
 
@@ -382,7 +507,8 @@ io.on('connection', function(socket) {
       for ( j = 0; j < 4; j++ ) {
 
         try {
-          if ( players[keyNames[i]].x > players[keyNames[j]].x && players[keyNames[i]].x < +players[keyNames[j]].x + 50 && players[keyNames[i]].y > players[keyNames[j]].y && players[keyNames[i]].y < +players[keyNames[j]].y + 50) {
+          if ( players[keyNames[i]].x > players[keyNames[j]].x - 50 && players[keyNames[i]].x < +players[keyNames[j]].x + 50 && players[keyNames[i]].y > players[keyNames[j]].y - 50 && players[keyNames[i]].y < +players[keyNames[j]].y + 50) {
+            if (i === j) { continue; }
             console.log(i + '-' + j + ' Collided');
             if ( players[keyNames[i]].homeZone === players[keyNames[i]].zone && players[keyNames[i]].zone === players[keyNames[j]].zone) {
               console.log('Send player ' + j + ' back to home zone');
@@ -395,10 +521,10 @@ io.on('connection', function(socket) {
                 playerTagged(players[keyNames[j]]);
               }
             } else {
-              console.log('Collide but not in zone?');
-              console.log(players[keyNames[i]].homeZone);
-              console.log(players[keyNames[i]].zone);
-              console.log(players[keyNames[j]].zone);
+              // console.log('Collide but not in zone?');
+              // console.log(players[keyNames[i]].homeZone);
+              // console.log(players[keyNames[i]].zone);
+              // console.log(players[keyNames[j]].zone);
             }
           }
         }
@@ -441,7 +567,8 @@ io.on('connection', function(socket) {
         game.bugs[i].pad = "Moving";
       }
 
-      if (player.x > game.bugs[i].x && player.x < +game.bugs[i].x + 50 && player.y > game.bugs[i].y && player.y < +game.bugs[i].y + 50 && (player.holding === i || player.holding === 0)) {
+      // Bugs collision
+      if (player.x > game.bugs[i].x - 50 && player.x < +game.bugs[i].x + 50 && player.y > game.bugs[i].y - 50 && player.y < +game.bugs[i].y + 50 && (player.holding === i || player.holding === 0)) {
         // console.log('Player ' + player.id + ' is on bug ' + i);
         game.bugs[i].heldBy = player.homeZone;
         player.holding = i;
@@ -453,6 +580,49 @@ io.on('connection', function(socket) {
 
     }
 
+     // Powerup location collision
+     if ( player.x > 380 - 40 && player.x < +380 + 40 && player.y > 380 - 40 && player.y < +380 + 40 && game.powerups.active.active === true) {
+
+      console.log('Player ' + player.homeZone + ' is on powerup');
+      console.log(game.powerups.active.id);
+
+      switch(game.powerups.active.id) {
+        case 5:
+          player.health = player.health + 33;
+          game.powerups.active.active = false;
+          break;
+        case 4:
+          console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 4;
+          break;
+        case 3:
+          console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 3;
+          break;
+        case 2:
+          console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 2;
+          break;
+        case 1:
+          console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 1;
+          break;
+        case 0:
+          console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 0;
+          break;
+        default:
+          console.log('Unknown Powerup?');
+      }
+
+    }
+
+    // No bugs left at pad check
     for (i=0; i < 3; i++) {
       if (game.insectTrack[i].length === 0) {
         console.log('Player ' + i + ' died');
@@ -466,7 +636,7 @@ io.on('connection', function(socket) {
 
 setInterval(function() {
 
-  io.sockets.emit('state', players, game.bugs, game.insectTrack, game.powerups);
+  io.sockets.emit('state', players, game.bugs, game.insectTrack, game.powerups, game.timer, scoreboardTime);
 
 }, 1000 / 60);
 

@@ -8,11 +8,10 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
   <link href="https://fonts.googleapis.com/css?family=Dokdo" rel="stylesheet">
-
-  <!-- <script src="/socket.io/socket.io.js"></script> -->
-  <link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet">
+  <link href="hwttps://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet">
 
   <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <script>
     (adsbygoogle = window.adsbygoogle || []).push({
@@ -35,41 +34,61 @@
           <label class="mb-0" for="room">Room</label>
           <br>
           <div class="d-inline-block">
-            <button class="btn btn-success active d-block">
+            <button id="room-1" class="btn btn-success active d-block">
               1<br>0/4
             </button>
             <div class="room-time">5:00</div>
           </div>
           <div class="d-inline-block">
-            <button class="btn btn-success d-block">
+            <button id="room-2" class="btn btn-success d-block">
               2<br>0/4
             </button>
             <div class="room-time">5:00</div>
           </div>
           <div class="d-inline-block">
-            <button class="btn btn-success d-block">
+            <button id="room-3" class="btn btn-success d-block">
               3<br>0/4
             </button>
             <div class="room-time">5:00</div>
           </div>
           <div class="d-inline-block">
-            <button class="btn btn-success d-block">
+            <button id="room-4" class="btn btn-success d-block">
               4<br>0/4
             </button>
             <div class="room-time">5:00</div>
           </div>
           <div class="d-inline-block">
-            <button class="btn btn-success d-block">
+            <button id="room-5" class="btn btn-success d-block">
               5<br>0/4
             </button>
             <div class="room-time">5:00</div>
+          </div>
+          <br>
+          <div class="d-inline-block">
+            <button id="room-6" class="btn btn-success d-block">
+              6<br>0/4
+            </button>
+            <div class="room-time">5:00</div>
+          </div>
+          <div class="d-inline-block">
+            <button id="room-7" class="btn btn-success d-block">
+              7<br>0/4
+            </button>
+            <div class="room-time">5:00</div>
+          </div>
+          <div class="d-inline-block">
+            <button style="width: 175px;" id="room-8" class="btn btn-success d-block">
+              &nbsp;<i class="fas fa-lock"></i>&nbsp;PRIVATE GAME<br>
+              <input id="input-room" style="height: 24px; width: 100%; text-align: center;" placeholder="#" type="number">
+            </button>
+            <div class="room-time mt-1" id="streamer"><i class="far fa-eye"></i></div>
           </div>
         </div>
   
         <div class="form-group">
           <label class="mb-0" for="nickname">Nickname</label>
           <input class="form-control" type="text" placeholder="" id="nickname" name="nickname" maxlength="8" autocomplete="off">
-          <small id="emailHelp" class="form-text text-muted" style="color: #4d5256!important">Visible To Other Players</small>
+          <small id="emailHelp" class="form-text text-muted" style="color: #4d5256!important">Visible To All Players</small>
         </div>
   
         <div>
@@ -78,7 +97,7 @@
 
     </div>
 
-    <div style="font-family: 'Dokdo', cursive; font-size: 1.5rem;" class="version">Beta 0.5</div>
+    <div style="font-family: 'Dokdo', cursive; font-size: 1.5rem;" class="version">Beta 0.9</div>
   </section>
 
   <!-- Modal -->
@@ -134,10 +153,51 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
 crossorigin="anonymous">
 </script>
 <script>
+
+    $('#room-1,#room-2,#room-3,#room-4,#room-5,#room-6,#room-7,#room-8').click( function() {
+      $('#room-1,#room-2,#room-3,#room-4,#room-5,#room-6,#room-7,#room-8').removeClass("active");
+      console.log(this);
+      $(this).addClass("active");
+    });
+
+    var streamer = false;
+
+    $('#streamer').click( function() {
+      if (!streamer) {
+        $('#streamer').html('<i class="far fa-eye-slash"></i>');
+        $('#input-room').css('-webkit-text-security', 'disc');
+        streamer = !streamer;
+      } else {
+        $('#streamer').html('<i class="far fa-eye"></i>');
+        $('#input-room').css('-webkit-text-security', 'none');
+        streamer = !streamer;
+      }
+    });
+
     $('#submit').click( function() {
         document.cookie = 'nickname='+$('#nickname').val()+'; path=/';
         doSomething();
     });
+
+    var names = ['Hypnotoad', 'Pepe', 'Mr. Toad', 'Frogger', 'Kermit', 'Genghis Frog', 'Tiana', 'Naveen', 'Throg', 'Frog', 'Toad'];
+    // If you are interested that much...
+    // Hypnotoad: Futurama
+    // Pepe: Pepe the Frog Meme
+    // Mr. Toad: The Wind in the Willows Book
+    // Frogger: Arcade Game Frogger
+    // Kermit: Muppets
+    // Genghis Frog: TMNT
+    // Tiana: The Princess and the Frog (2009)
+    // Naveen: The Princess and the Frog (2009)
+    // Throg: Marvel Comics
+    // Frog: Frog and Toad Book
+    // Toad: Frog: Frog and Toad Book
+    // 👍
+
+    var min = 0;
+    var max = names.length;
+    var random = Math.floor(Math.random() * (+max - +min) + +min); 
+    $('#nickname').val(names[random]);
 
     function getCookie(name) {
         var dc = document.cookie;
