@@ -45,7 +45,7 @@ io.on('connection', function(socket) {
 });
 
 var debug = {
-  mode: true,
+  mode: false,
   
   powerups: {
     // Turn off powerup spawning
@@ -62,7 +62,7 @@ var debug = {
 var game = {
   active: false,
   stage: 0,
-  timer: 300,
+  timer: 60,
   scoreboard: {
     time: 30
   },
@@ -176,7 +176,6 @@ function gameTimer() {
       function findWithAttr(array, attr, value) {
         for(var i = 0; i < array.length; i += 1) {
             if(array[i][attr] === value) {
-                console.log(game.powerups.cycled[array[i].type].name);
                 game.powerups.active.id = array[i].type;
                 return i;         
             } 
