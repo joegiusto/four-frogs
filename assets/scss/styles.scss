@@ -1,3 +1,5 @@
+@import 'controls';
+
 * {
   // color: #000000;
   // font-size: 25px;
@@ -38,6 +40,7 @@ body {
 }
 
 #canvas {
+  margin-top: 50px;
   width: 100%;
   height: auto;
   border: 5px solid #814d23;
@@ -165,6 +168,9 @@ body {
 #startScreen, #gameScreen {
   height: 90vh;
   position: relative;
+  @media (max-width: 768px) {
+    height: 100vh;
+  } 
 }
 
 #startScreen_background {
@@ -177,11 +183,30 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  @media (max-width: 768px) {
+    background-size: 300%;
+    background-position: 50% -85px;
+  } 
 }
 
 #gameScreen .container-fluid {
   position: absolute;
   top: 0px;
+}
+
+.nickname-group {
+  position: relative;
+  #new-name {
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateX(50%) translateY(-50%);
+    font-size: 1rem;
+    // width: 20px;
+    // height: 20px;
+    // background-color: #814d23;
+  }
 }
 
 .login-form {

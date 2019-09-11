@@ -1,0 +1,83 @@
+#zone_joystick {
+  position: absolute;
+  bottom: 10px;
+  background-color: #ffc190;
+  // margin-top: 50px;
+  height: 300px;
+  position: relative;
+  border-radius: 0px;
+  border: solid 5px #814d23;
+}
+
+.zone {
+  position: absolute;
+  top: 0px;
+}
+
+#debug {
+  font-size: 0.5rem;
+  font-weight: bold;
+  ul {
+    padding: 0px;
+    list-style: none;
+  }
+}
+
+#zone_joystick h1 {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  // margin-right: 0.3rem;
+  // margin-bottom: 1rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  background-color: #814d23;
+  padding: 0.3rem;
+  color: white;
+  // border-radius: 5px;
+  // border: solid 1px #000;
+}
+
+.side-button {
+  position: absolute;
+  top: 50%;
+  right: 30%; 
+  background-color: green;
+  width: 50px;
+  height: 50px;
+  transform: translateX(50%) translateY(-50%);
+  border-radius: 100%;
+  border: solid 2px black;
+  border-bottom: solid 5px black;
+  z-index: 1000;
+}
+
+h1 div.circle {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  background-color: rgba(255, 165, 0, 0.5);
+  border-radius: 100%;
+  // margin-right: 0.2rem;
+  position: relative;
+  &:after {
+    content: "";
+    border-radius: 100%;
+    width: 50%;
+    height: 50%;
+    background-color: orange;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}

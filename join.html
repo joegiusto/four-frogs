@@ -5,6 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+  <link rel="shortcut icon" href="assets/favicon.png">
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
   <link href="https://fonts.googleapis.com/css?family=Dokdo" rel="stylesheet">
@@ -12,13 +14,7 @@
 
   <link rel="stylesheet" href="./assets/css/styles.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({
-      google_ad_client: "ca-pub-8644888110815590",
-      enable_page_level_ads: true
-    });
-  </script>
+
 </head>
 
 <body>
@@ -28,67 +24,80 @@
 
     <div class="login-form" style="font-family: 'Dokdo', cursive; font-size: 1.5rem;">
       <h1 class="mb-0" style="font-family: 'Dokdo', cursive;">Welcome</h1>
-      <!-- <a data-toggle="modal" data-target="#exampleModal" style="color: #6f3d1e;"  onclick="javascript.preventDefault()"><span style='font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"; font-size: 1rem;'>ℹ️</span>Controls and Rules</a> -->
 
         <div class="form-group">
           <label class="mb-0" for="room">Room</label>
           <br>
+
           <div class="d-inline-block">
             <button id="room-1" class="btn btn-success active d-block">
               1<br>0/4
             </button>
             <div class="room-time">5:00</div>
           </div>
+
           <div class="d-inline-block">
             <button id="room-2" class="btn btn-success d-block">
               2<br>0/4
             </button>
             <div class="room-time">5:00</div>
           </div>
+
           <div class="d-inline-block">
             <button id="room-3" class="btn btn-success d-block">
               3<br>0/4
             </button>
             <div class="room-time">5:00</div>
           </div>
+
           <div class="d-inline-block">
             <button id="room-4" class="btn btn-success d-block">
               4<br>0/4
             </button>
             <div class="room-time">5:00</div>
           </div>
-          <div class="d-inline-block">
+
+          <!-- <div class="d-inline-block">
             <button id="room-5" class="btn btn-success d-block">
               5<br>0/4
             </button>
             <div class="room-time">5:00</div>
-          </div>
-          <br>
-          <div class="d-inline-block">
+          </div> -->
+
+          <!-- <div class="d-inline-block">
             <button id="room-6" class="btn btn-success d-block">
               6<br>0/4
             </button>
             <div class="room-time">5:00</div>
-          </div>
-          <div class="d-inline-block">
+          </div> -->
+
+          <!-- <div class="d-inline-block">
             <button id="room-7" class="btn btn-success d-block">
               7<br>0/4
             </button>
             <div class="room-time">5:00</div>
-          </div>
-          <div class="d-inline-block">
+          </div> -->
+
+          <!-- <div class="d-inline-block">
             <button style="width: 175px;" id="room-8" class="btn btn-success d-block">
               &nbsp;<i class="fas fa-lock"></i>&nbsp;PRIVATE GAME<br>
               <input id="input-room" style="height: 24px; width: 100%; text-align: center;" placeholder="#" type="number">
             </button>
             <div class="room-time mt-1" id="streamer"><i class="far fa-eye"></i></div>
-          </div>
+          </div> -->
+
         </div>
   
-        <div class="form-group">
+        <div class="form-group nickname-group">
+
           <label class="mb-0" for="nickname">Nickname</label>
           <input class="form-control" type="text" placeholder="" id="nickname" name="nickname" maxlength="8" autocomplete="off">
           <small id="emailHelp" class="form-text text-muted" style="color: #4d5256!important">Visible To All Players</small>
+
+          <div id="new-name">
+            <i class="fas fa-redo"></i>
+          </div>
+
         </div>
   
         <div>
@@ -97,48 +106,8 @@
 
     </div>
 
-    <div style="font-family: 'Dokdo', cursive; font-size: 1.5rem;" class="version">Beta 0.9</div>
+    <div style="font-family: 'Dokdo', cursive; font-size: 1.5rem;" class="version">VERSION 0.9</div>
   </section>
-
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-gamepad pr-2"></i>Controls</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="container-fluid">
-
-            <div class="row">
-
-              <div class="col-12">
-                <img src="./assets/img/controls.png" width="100%" alt="">
-              </div>
-
-              <div class="col-12">
-                <p class="mt-5">Objective: Steal the insects from the other frogs lily pads<br><br>
-
-                  <!-- - Make sure not to get tagged outside your zone to avoid a penality<br><br> -->
-
-                  - Tag players trying to steal your insects to send them packing back to thier pad with a timeout<br><br>
-                  - Avoid being tagged outside your own zone<br><br>
-                </p>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-panel" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 </body>
 
@@ -161,7 +130,6 @@ crossorigin="anonymous">
     });
 
     var streamer = false;
-
     $('#streamer').click( function() {
       if (!streamer) {
         $('#streamer').html('<i class="far fa-eye-slash"></i>');
@@ -180,6 +148,9 @@ crossorigin="anonymous">
     });
 
     var names = ['Hypnotoad', 'Pepe', 'Mr. Toad', 'Frogger', 'Kermit', 'Genghis Frog', 'Tiana', 'Naveen', 'Throg', 'Frog', 'Toad'];
+    var min = 0;
+    var max = names.length;
+
     // If you are interested that much...
     // Hypnotoad: Futurama
     // Pepe: Pepe the Frog Meme
@@ -193,11 +164,16 @@ crossorigin="anonymous">
     // Frog: Frog and Toad Book
     // Toad: Frog: Frog and Toad Book
     // 👍
+    newName();
 
-    var min = 0;
-    var max = names.length;
-    var random = Math.floor(Math.random() * (+max - +min) + +min); 
-    $('#nickname').val(names[random]);
+    $('#new-name').click(() => {
+      newName();
+    });
+
+    function newName() {
+      var random = Math.floor(Math.random() * (+max - +min) + +min); 
+      $('#nickname').val(names[random]);
+    }
 
     function getCookie(name) {
         var dc = document.cookie;
@@ -215,8 +191,7 @@ crossorigin="anonymous">
             end = dc.length;
             }
         }
-        // because unescape has been deprecated, replaced with decodeURI
-        //return unescape(dc.substring(begin + prefix.length, end));
+        
         return decodeURI(dc.substring(begin + prefix.length, end));
     } 
 
@@ -235,12 +210,5 @@ crossorigin="anonymous">
         }
     }
 </script>
-<script>
-  $('#myModal').on('shown.bs.modal', function () {
-    $('#myInput').trigger('focus')
-  })
-</script>
-
-<!-- <script src="/static/game.js"></script> -->
 
 </html>

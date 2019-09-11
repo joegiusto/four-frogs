@@ -45,18 +45,17 @@ io.on('connection', function(socket) {
 });
 
 var debug = {
-  mode: false,
+  mode: true,
   
   powerups: {
     // Turn off powerup spawning
     cycle: true,
     // Spawn specifc powerup (-1 for default)
-    override: 4
+    override: -1
   },
 
   timeOverride: 600,
-
-  playersToStart: 1
+  playersToStart: 4
 }
 
 var game = {
@@ -114,10 +113,10 @@ var game = {
     }
   },
   // Time at which powerup will spawn
-  powerups_times: [ 298, 240, 180, 120, 60],
+  powerups_times: [ 50, 40, 30, 20, 10],
   // Populated on server start
   powerups_schedule: [],
-  powerups_experation: 45
+  powerups_experation: 5
 }
 
 var gameCopy = game;
@@ -297,8 +296,6 @@ function gameOver(reason) {
   }
 
 }
-
-console.log(game);
 
 var players = {};
 
