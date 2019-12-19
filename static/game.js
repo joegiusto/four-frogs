@@ -43,7 +43,7 @@ else {
 
 
 
-    socket.on('newPlayer', function(totalPlayerCount, players) {
+    socket.on('newPlayer', function(totalPlayerCount, players, displayBugs) {
 
       document.getElementById('playerCount').innerHTML = totalPlayerCount;
       totalPlayerCount >= 4 ? ($('#lobbyStatus').html('[Game In Progress]'), $('#lobbyStatus').css("color", "green") ) : ( $('#lobbyStatus').html('[Waiting on more players]'), $('#lobbyStatus').css("color", "red") );
@@ -77,6 +77,13 @@ else {
       }
       catch(err) {
         console.log('Yellow Player is still needed to start the game')
+      }
+
+      if (displayBugs) {
+        console.log('Display bug info')
+      } else {
+        console.log('Don\'t display bug info')
+        document.getElementById('debug-bug-info').classList.add('d-none')
       }
 
     });
@@ -237,7 +244,20 @@ else {
   //     scoreboardTimer(minutesInSeconds, display);
   // };
 
-    socket.on('state', function(players, bugs, insectTrack, powerups, timer, scoreboardTimer) {
+    socket.on('time-left', function(time) {
+      console.log(time);
+      document.getElementById('scoreboard-timer').innerHTML = time;
+
+      if (time === 0) {
+        // window.location.replace("/join.html");
+        console.log("Time was 0")
+        window.location.replace("../join.html");
+      } 
+
+    });
+
+    socket.on('state', function(players, bugs, insectTrack, powerups, timer) {
+      console.log(bugs);
 
       var keyNames = Object.keys(players);
 
@@ -255,28 +275,28 @@ else {
       context.fillStyle='rgba(239,239,143,.5)'; 
       context.fillRect(400, 400, 400, 400);
 
-      if (powerups.active.id === 4 ) {
+      // if (powerups.active.id === 4 ) {
 
-        try {
-          if (players[keyNames[0]].powerup === 4) {
-            context.fillStyle='rgba(255,105,97,.5)'; 
-            context.fillRect(0, 0, 450, 450);
-          } else if (players[keyNames[1]].powerup === 4) {
-            context.fillStyle='rgba(173,216,230,.5)';
-            context.fillRect(400, 0, 350, 450);
-          } else if (players[keyNames[2]].powerup === 4) {
-            context.fillStyle='rgba(144,238,144,.5)'; 
-            context.fillRect(0, 400, 450, 350);
-          } else if (players[keyNames[3]].powerup === 4) {
-            context.fillStyle='rgba(239,239,143,.5)'; 
-            context.fillRect(400, 400, 350, 350);
-          }
-        }
-        catch(err) {
+      //   try {
+      //     if (players[keyNames[0]].powerup === 4) {
+      //       context.fillStyle='rgba(255,105,97,.5)'; 
+      //       context.fillRect(0, 0, 450, 450);
+      //     } else if (players[keyNames[1]].powerup === 4) {
+      //       context.fillStyle='rgba(173,216,230,.5)';
+      //       context.fillRect(400, 0, 350, 450);
+      //     } else if (players[keyNames[2]].powerup === 4) {
+      //       context.fillStyle='rgba(144,238,144,.5)'; 
+      //       context.fillRect(0, 400, 450, 350);
+      //     } else if (players[keyNames[3]].powerup === 4) {
+      //       context.fillStyle='rgba(239,239,143,.5)'; 
+      //       context.fillRect(400, 400, 350, 350);
+      //     }
+      //   }
+      //   catch(err) {
           
-        }
+      //   }
         
-      }
+      // }
 
       drawRotated(0, 0, 320, "Red");
       drawRotated(800 - 160, 0, 30, "Blue");
@@ -423,13 +443,13 @@ else {
       }
 
 
-      if (powerups.active.active === true && powerups.active.id === 5) {
-        var img = document.getElementById( "health" );
-        context.drawImage(img, 400-20, 400-20, 40, 40);
-      } else if (powerups.active.active === true && powerups.active.id != 5) {
-        var img = document.getElementById( "powerup-1" );
-        context.drawImage(img, 400-20, 400-20, 40, 40);
-      };
+      // if (powerups.active.active === true && powerups.active.id === 5) {
+      //   var img = document.getElementById( "health" );
+      //   context.drawImage(img, 400-20, 400-20, 40, 40);
+      // } else if (powerups.active.active === true && powerups.active.id != 5) {
+      //   var img = document.getElementById( "powerup-1" );
+      //   context.drawImage(img, 400-20, 400-20, 40, 40);
+      // };
 
       // if (powerups.active.active === true) {
       //   var img = document.getElementById( "powerup" );
@@ -460,25 +480,9 @@ else {
 
       document.getElementById('time_left').innerHTML = minutes + ":" + seconds;
 
+      // If game time is 0 seconds then game is over and we can display the leaderboard now
       if (timer === 0) {
         $('.scoreboard-container').removeClass('d-none');
-      }
-
-      // --- --- --- --- --- --- --- --- --- --- --- ---
-
-      minutes1 = parseInt(scoreboardTimer / 60, 10)
-      seconds1 = parseInt(scoreboardTimer % 60, 10);
-
-      // Place a 0 back in quotes to float zeros.
-      minutes1 = minutes1 < 10 ? "" + minutes1 : minutes1;
-      seconds1 = seconds1 < 10 ? "0" + seconds1 : seconds1;
-
-      var temp = 30 - seconds1;
-
-      document.getElementById('scoreboard-timer').innerHTML = '0:' + (temp < 10 ? '0' + temp : temp);
-
-      if (scoreboardTimer >= 29) {
-        window.location.replace("../join.html");
       }
       
       for (i=0; i < insectTrack.length; i++) {

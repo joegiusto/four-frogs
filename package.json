@@ -3,6 +3,7 @@
   "version": "",
   "dependencies": {
     "express": "^4.16.4",
+    "forever": "^1.0.0",
     "nipplejs": "^0.8.2",
     "socket.io": "^2.2.0"
   },
