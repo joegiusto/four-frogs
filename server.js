@@ -10,19 +10,18 @@ var io = socketIO(server);
 
 const {execSync} = require('child_process');
 
-
 // const PORT = process.env.PORT || 5000;
 app.set('port', 8081);
 
 app.use('/static', express.static(__dirname + '/static'));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post('/', function (req, res) {
-  const body = req.body.Body
-  res.set('Content-Type', 'text/ plain')
-  res.set('Cache-Control', 'private, max-age=86400') // one year
-  res.send(`You sent: ${body} to Express`)
-})
+// app.post('/', function (req, res) {
+//   const body = req.body.Body
+//   res.set('Content-Type', 'text/ plain')
+//   res.set('Cache-Control', 'private, max-age=86400') // one year
+//   res.send(`You sent: ${body} to Express`)
+// })
 
 // Routing
 app.get('/', function(request, response) {
@@ -53,7 +52,7 @@ var debug = {
   // These can only be changed if debug.mode is true
   powerups: {
     // Turn off powerup spawning
-    cycle: false,
+    cycle: true,
     // Spawn specifc powerup (-1 for default)
     override: 0
   },
@@ -71,9 +70,9 @@ var debug = {
 const initalGame = {
   active: false,
   stage: 0,
-  timer: 60 * 3,
+  timer: 60 * 2,
   scoreboard: {
-    time_before_restart: 15
+    time_before_restart: 3
   },
   players: {},
   specPlayers: {},
@@ -130,11 +129,13 @@ const initalGame = {
 }
 
 // var game = Object.assign({}, initalGame);
+const clone = JSON.parse(JSON.stringify(initalGame));
+
 var game = {
-  ...initalGame, 
-  bugs: initalGame.bugs,
-  scoreboard: {...initalGame.scoreboard},
-  players: {...initalGame.players}
+  ...clone, 
+  bugs: clone.bugs,
+  scoreboard: {...clone.scoreboard},
+  players: {...clone.players}
 };
 
 for (i=0; i < game.powerups_times.length; i++) {
@@ -173,14 +174,9 @@ const bugStart = [
 populateBugs();
 
 function populateBugs() {
-  console.log("Bugs populated!");
-  console.log("This should by empty");
-  console.log(initalGame.bugs);
-
   game.bugs = [];
 
   // Fill bugs array on server start
-  // Bug X and Y locations
   for (i = 0; i < 12; i++) {
     game.bugs.push({
       held: false,
@@ -191,9 +187,6 @@ function populateBugs() {
       pad: 'none'
     })
   }
-
-  console.log("This should still be empty");
-  console.log(initalGame.bugs);
 }
 
 function gameTimer() {
@@ -266,7 +259,14 @@ function scoreboard() {
 
 function resetGame() {
   console.log("Reset game was called!");
-  execSync('yarn forever restart server.js')
+  // execSync('yarn forever restart server.js')
+  game = {
+    ...clone, 
+    bugs: clone.bugs,
+    scoreboard: {...clone.scoreboard},
+    players: {}
+  };
+  populateBugs();
 }
 
 
