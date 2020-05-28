@@ -1,13 +1,11 @@
 ## Four Frogs!
-
 Browser based, frog themed, capture the flag multiplayer game!
 
 ## Startup Info
-
-This game is still in alpha and does not work well at the current moment but just wanted to start a git for it and get it up. If you are interested in playing have Node installed, install dependecies and run
+This game is still in development but if you are interested in playing head to fourfrogs.io with friends or download these files and run.
  
-### `npx nodemon server.js`
+### `nodemon server.js`
 ### `gulp watch`
 
-First command to fire up server, navigate to localhost:3000
-Second command to watch for scss changes and compile, will switch to webpack in future.
+First command is to fire up the server
+Second command to watch the SCSS files and compile on change

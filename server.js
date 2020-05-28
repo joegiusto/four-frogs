@@ -259,7 +259,7 @@ function scoreboard() {
 
 function resetGame() {
   console.log("Reset game was called!");
-  // execSync('yarn forever restart server.js')
+
   game = {
     ...clone, 
     bugs: clone.bugs,
