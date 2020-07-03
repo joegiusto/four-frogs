@@ -125,18 +125,14 @@ crossorigin="anonymous">
     function doSomething() {
         var myCookie = getCookie("nickname");
 
-        // if (myCookie == null) {
-        //     // do cookie doesn't exist stuff;
-        //     window.location.replace("../join.html");
-        //     console.log("No Cookie :(");
-        // }
-        // else {
-        //     // do cookie exists stuff;
-        //     console.log("Cookie :)");
-        //     window.location.replace("/");
-        // }
-
-        window.location.replace("http://47.18.18.170:8081/");
+        if (myCookie == null) {
+            console.log("No Cookie :(");
+            window.location.replace("../join.html");
+        }
+        else {
+            console.log("Cookie :)");
+            window.location.replace("/");
+        }
     }
 </script>
 
