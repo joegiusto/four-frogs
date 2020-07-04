@@ -11,7 +11,7 @@ var io = socketIO(server);
 const {execSync} = require('child_process');
 
 const PORT = process.env.PORT || 8081;
-app.set('port', PORT);
+// app.set('port', PORT);
 
 app.use('/static', express.static(__dirname + '/static'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,7 +40,7 @@ app.use(express.static(__dirname + '/'));
   // console.log('Starting server on port 8081');
 // });
 // New
-server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
