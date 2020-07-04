@@ -5,8 +5,12 @@ var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
 var app = express();
-var server = http.Server(app);
-var io = socketIO(server);
+
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+
+// var server = http.Server(app);
+// var io = socketIO(server);
 
 const {execSync} = require('child_process');
 
@@ -40,7 +44,12 @@ app.use(express.static(__dirname + '/'));
   // console.log('Starting server on port 8081');
 // });
 // New
-app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+// app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
+/// New New
+http.listen(process.env.PORT || 8081, () => {
+  console.log( '\x1b[32m%s\x1b[0m', '[Startup] HTTP Ready');
+});
 
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
