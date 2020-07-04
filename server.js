@@ -1,9 +1,9 @@
 // Dependencies
 var express = require('express');
 var bodyParser = require('body-parser');
-var http = require('http');
+// var http = require('http');
 var path = require('path');
-var socketIO = require('socket.io');
+// var socketIO = require('socket.io');
 var app = express();
 
 var http = require('http').createServer(app);
@@ -14,7 +14,7 @@ var io = require('socket.io')(http);
 
 const {execSync} = require('child_process');
 
-const PORT = process.env.PORT || 8081;
+// const PORT = process.env.PORT || 8081;
 // app.set('port', PORT);
 
 app.use('/static', express.static(__dirname + '/static'));
