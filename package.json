@@ -2,6 +2,7 @@
   "name": "fourfrogs",
   "version": "",
   "dependencies": {
+    "browser-sync": "^2.26.13",
     "express": "^4.16.4",
     "nipplejs": "^0.8.2",
     "socket.io": "^2.2.0"
@@ -14,6 +15,6 @@
   },
   "scripts": {
     "start": "node server.js",
-    "watch-start": "nodemon server.js"
+    "watch": "nodemon server.js"
   }
 }

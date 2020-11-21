@@ -21,8 +21,9 @@ body {
 .powerup-times {
   position: absolute;
   font-size: 2rem;
-  top: -40px;
-  left: 80px;
+  top: -30px;
+  // left: 50%;
+  // transform: translateX(-50%);
 }
 
 .hidden-timer {

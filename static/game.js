@@ -256,24 +256,32 @@ else {
 
     });
 
-    socket.on('state', function(players, bugs, insectTrack, powerups, timer) {
+    socket.on('state', function(players, bugs, insectTrack, powerups, timer, powerups_schedule) {
       console.log(bugs);
 
       var keyNames = Object.keys(players);
 
       context.clearRect(0, 0, 800, 800);
 
+      // Red Zone
       context.fillStyle='rgba(255,105,97,.5)'; 
       context.fillRect(0, 0, 400, 400);
   
+      // IDK
       context.fillStyle='rgba(173,216,230,.5)';
       context.fillRect(400, 0, 400, 400);
   
+      // IDK
       context.fillStyle='rgba(144,238,144,.5)'; 
       context.fillRect(0, 400, 400, 400);
   
+      // IDK
       context.fillStyle='rgba(239,239,143,.5)'; 
       context.fillRect(400, 400, 400, 400);
+
+      // Random Powerup Zone
+      context.fillStyle='rgba(0, 0, 0, .5)'; 
+      context.fillRect(200, 200, 400, 400);
 
       // if (powerups.active.id === 4 ) {
 
@@ -333,21 +341,21 @@ else {
         var draw = 'square';
 
         switch(player.powerup) {
-          case 0:
+          case 'Tough Guy':
             var playerSize = 60;
             context.font = "10px Arial";
             context.fillStyle = "#000";
             context.textAlign = "center"; 
             context.fillText('Tough Guy', player.x + playerSize / 2, player.y + 70);
             break;
-          case 1:
+          case 'Muddy Water':
             context.font = "10px Arial";
             context.fillStyle = "#000";
             context.textAlign = "center"; 
             context.fillText('Muddy Water', player.x + playerSize / 2, player.y + 55);
             player.color = "#964"
             break;
-          case 2:
+          case 'Stinky Frog':
               context.font = "10px Arial";
               context.fillStyle = "#000";
               context.textAlign = "center"; 
@@ -416,7 +424,7 @@ else {
         context.fillRect(player.x + playerSize - 12.5, player.y + 2.5, 10, 10);
         context.fill();
 
-        // Mouf
+        // Mouth
         context.beginPath();
         context.fillStyle = "#000";
         context.fillRect(player.x + 5, player.y + 20, playerSize - 10, playerSize / 4);
@@ -442,14 +450,14 @@ else {
 
       }
 
-
-      // if (powerups.active.active === true && powerups.active.id === 5) {
-      //   var img = document.getElementById( "health" );
-      //   context.drawImage(img, 400-20, 400-20, 40, 40);
-      // } else if (powerups.active.active === true && powerups.active.id != 5) {
-      //   var img = document.getElementById( "powerup-1" );
-      //   context.drawImage(img, 400-20, 400-20, 40, 40);
-      // };
+      if (powerups.active.active === true && powerups.active.id === 5) {
+        // Health is disabled for now...
+        // var img = document.getElementById( "health" );
+        // context.drawImage(img, powerups.active.x-20, 400-20, 40, 40);
+      } else if (powerups.active.active === true && powerups.active.id != 5) {
+        var img = document.getElementById( "powerup-1" );
+        context.drawImage(img, powerups.active.x-20, powerups.active.y-20, 40, 40);
+      };
 
       // if (powerups.active.active === true) {
       //   var img = document.getElementById( "powerup" );
@@ -463,12 +471,10 @@ else {
       // context.drawImage(img, 305, 275, 50, 50);
 
       for (i = 0; i < bugs.length; i++) {
-
         var img = document.getElementById( "bug-" + bugs[i].bugType );
         context.drawImage(img, bugs[i].x, bugs[i].y, 50, 50);
-        var player = i;
-        document.getElementById('bug-' + (i + 1) +'-info').innerHTML = 'X:' + bugs[i].x + ' Y:' + bugs[i].y + ' Holder:' + bugs[i].heldBy + ' Pad:' + bugs[i].pad;
-        
+        // var player = i;
+        // document.getElementById('bug-' + (i + 1) +'-info').innerHTML = 'X:' + bugs[i].x + ' Y:' + bugs[i].y + ' Holder:' + bugs[i].heldBy + ' Pad:' + bugs[i].pad;
       }
 
       minutes = parseInt(timer / 60, 10)
@@ -480,10 +486,47 @@ else {
 
       document.getElementById('time_left').innerHTML = minutes + ":" + seconds;
 
+      document.getElementById('powerup_next').innerHTML = (`${timer - powerups.powerup_next}`);
+
       // If game time is 0 seconds then game is over and we can display the leaderboard now
-      if (timer === 0) {
+      if (timer < 0) {
         $('.scoreboard-container').removeClass('d-none');
       }
+
+      // Logging bugs info to debug info
+      document.getElementById('bug-info').innerHTML = '';
+      bugs.forEach( (bug, i) => {
+        var bugDiv = document.getElementById("bug-info");
+        bugDiv.appendChild(document.createTextNode(`Bug ${i + 1} | X: ${bug.x} Y: ${bug.y} | Holder: ${bug.heldBy} | Pad: ${bug.pad}`));
+        bugDiv.appendChild(document.createElement("br"));
+      });
+
+      // Logging powerups info to debug info
+      document.getElementById('powerup-info').innerHTML = '';
+      powerups_schedule.forEach( (powerup, i) => {
+        var powerupDiv = document.getElementById("powerup-info");
+        powerupDiv.appendChild(document.createTextNode(`Powerup ${i + 1} | ${powerup.time}s | Perk: ${powerup.id}`));
+        powerupDiv.appendChild(document.createElement("br"));
+      });
+
+      // var array = powerups_schedule;
+      // console.log( findClosest(timer) );
+      
+      // Closset powerup time
+      // function findClosest (value) {
+      //   // By default that will be a big number
+      //   var closestValue = Infinity;
+      //   // We will store the index of the element
+      //   var closestIndex = -1;
+      //   for (var i = 0; i < array.length; ++i) {
+      //     var diff = Math.abs(array[i].time - value);
+      //     if (diff < closestValue) {
+      //       closestValue = diff;
+      //       closestIndex = i;
+      //     }
+      //   }
+      //   return closestIndex;
+      // }
       
       for (i=0; i < insectTrack.length; i++) {
 

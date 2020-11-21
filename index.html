@@ -69,11 +69,18 @@
           <!-- Lags the site, delay. -->
           <!-- <img class="img-fluid ripple" src="./assets/ripple.gif" alt=""> -->
 
-          <div class="powerup-times">
-            <span class="badge badge-success">2:30</span>
-            <span class="badge badge-success">2:00</span>
+          <div class="powerup-times d-flex justify-content-center w-100">
+            <span class="badge badge-success">Next Powerup: <span id="powerup_next">0</span> seconds</span>
+
+            <!-- <span class="badge badge-light">
+              1
+              <br>
+              1:30s
+            </span>
+
             <span class="badge badge-success">1:30</span>
-            <span class="badge badge-success">1:00</span>
+            <span class="badge badge-success">1:00</span> -->
+
           </div>
 
           <div class="hidden-timer noselect">
@@ -117,8 +124,14 @@
             </div>
 
             <div id="debug-bug-info" class="panel-content-group debug">
+
               <h5>Debug Info</h5>
-              <p>Bug-1 - <span id='bug-1-info'></span></p>
+
+              <div id='powerup-info'></div>
+              <span><br></span>
+              <div id='bug-info'></div>
+
+              <!-- <p>Bug-1 - <span id='bug-1-info'></span></p>
               <p>Bug-2 - <span id='bug-2-info'></span></p>
               <p>Bug-3 - <span id='bug-3-info'></span></p>
               <p>Bug-4 - <span id='bug-4-info'></span></p>
@@ -129,7 +142,7 @@
               <p>Bug-9 - <span id='bug-9-info'></span></p>
               <p>Bug-10 - <span id='bug-10-info'></span></p>
               <p>Bug-11 - <span id='bug-11-info'></span></p>
-              <p>Bug-12 - <span id='bug-12-info'></span></p>
+              <p>Bug-12 - <span id='bug-12-info'></span></p> -->
             </div>
 
             <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 2rem;">
@@ -241,8 +254,13 @@
 
             <div class="space-fill" style="flex-grow: 1;"></div>
 
-            <h5 class="mt-5">Server Sponser</h5>
+            <h5>Debug Controls</h5>
             <div class="panel-content-group mt-0" id="ad-holder-full">
+              <button onclick="socket.emit( 'resetGame' );" class="btn btn-secondary">Reset</button>
+            </div>
+
+            <h5 class="mt-5">Server Sponser</h5>
+            <div class="panel-content-group mt-2" id="ad-holder-full">
               <a href="https://cosmicstudios.xyz" target="_blank">
                 <div class="ad-cosmic">
                   <img src="https://cosmicstudios.xyz/assets/img/profile.svg" height="75px" alt="">

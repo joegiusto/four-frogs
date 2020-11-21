@@ -63,12 +63,12 @@ var debug = {
     // Turn off powerup spawning
     cycle: true,
     // Spawn specifc powerup (-1 for default)
-    override: 0
+    override: -1
   },
 
   // These can be changed regardless of debug.mode state
   display: {
-    bugInfo: false
+    bugInfo: true
   },
 
   timeOverride: 600,
@@ -76,12 +76,15 @@ var debug = {
 }
 
 // Used to populate the game object and reset everything back to default once game is over
+
+const gameTime = 60 * 2;
+
 const initalGame = {
   active: false,
   stage: 0,
-  timer: 60 * 2,
+  timer: gameTime,
   scoreboard: {
-    time_before_restart: 3
+    time_before_restart: 30
   },
   players: {},
   specPlayers: {},
@@ -95,15 +98,15 @@ const initalGame = {
   powerups: {
     cycled: [
       {
-        id: 0,
+        id: 'Tough Guy',
         name: 'Tough Guy',
       },
       {
-        id:  1,
+        id:  'Muddy Water',
         name: 'Muddy Water',
       },
       {
-        id: 2,
+        id: 'Stinky Frog',
         name: 'Stinky Frog',
       },
       // {
@@ -127,11 +130,13 @@ const initalGame = {
     ],
     active: {
       active: false,
-      id: null
-    }
+      id: null,
+      powerups_experation: 15
+    },
+    powerup_next: null
   },
   // Time at which powerup will spawn
-  powerups_times: [ 50, 40, 30, 20, 10],
+  powerups_times: [ /*(gameTime - (gameTime / 4) )*/ (110), (gameTime / 2), (gameTime / 4) ],
   // Populated on server start
   powerups_schedule: [],
   powerups_experation: 5
@@ -158,9 +163,17 @@ for (i=0; i < game.powerups_times.length; i++) {
       type: game.powerups.cycled[debug.powerups.override].id
     });
   } else {
+
+    function getRandomArbitrary(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
     game.powerups_schedule.push({
       time: game.powerups_times[i],
-      type: game.powerups.cycled[randomPowerup].id
+      id: game.powerups.cycled[randomPowerup].id,
+      active: false,
+      x: getRandomArbitrary(200, 550),
+      y: getRandomArbitrary(200, 550) 
     });
   }
 }
@@ -198,48 +211,57 @@ function populateBugs() {
   }
 }
 
+function closest(arr,val){
+  return Math.max.apply(null, arr.filter(function(v){return v <= val}))
+}
+
 function gameTimer() {
 
-  setTimeout(function () {
-    game.timer--;
+    game.active = true;
 
-    if ( game.timer === 0)  {
-      console.log('Game over');
-      scoreboard();
-    } else {
-
-      // function findWithAttr(array, attr, value) {
-      //   for(var i = 0; i < array.length; i += 1) {
-      //       if(array[i][attr] === value) {
-      //           game.powerups.active.id = array[i].type;
-      //           return i;         
-      //       } 
-      //   }
-      //   return -1;
-      // }
-
-      // if (findWithAttr(game.powerups_schedule, 'time', game.timer) != -1) {
-      //   console.log("Powerup Time");
-      //   game.powerups.active.active = true;
-      // }
-
-      // if (findWithAttr(game.powerups_schedule, 'time', game.timer - game.powerups_experation ) != -1) {
-      //   console.log("Powerup Takeaway Time");
-      //   game.powerups.active.active = false;
-      // }
-
-      // Might take out health so keeping this out for now
-      // if ( gameTime === 30 ) {
-      //   game.powerups.active.active = true;
-      //   game.powerups.active.id = 5;
-      //   console.log('Powerup appear');
-      // }
-
-      // Recall function
-      gameTimer();
-    }
-
-  }, 1000);
+    setTimeout(function () {
+    
+      game.timer--;
+  
+      if ( game.timer < 0 )  {
+        game.active = false;
+        clearInterval(gameTimer);
+        console.log('Game over');
+        scoreboard();
+      } else {
+        
+        var futurePowerups = game.powerups_schedule.filter(obj => {
+          return obj.time < game.timer
+        })
+        
+        futurePowerups = futurePowerups.map(function (obj) {
+          return obj.time;
+        })
+        
+        // console.log(futurePowerups)
+        game.powerups.powerup_next = closest(futurePowerups, game.timer);
+  
+        var futurePowerups = game.powerups_schedule.filter(obj => {
+          return obj.time > game.timer
+        })
+  
+        game.powerups_schedule.forEach(powerup => {
+  
+          if (powerup.time === game.timer) {
+            console.log(`Making powerup "${powerup.id}" active!`)
+            game.powerups.active.id = powerup.id;
+            game.powerups.active.active = true;
+            game.powerups.active.x = powerup.x;
+            game.powerups.active.y = powerup.y;
+          }
+  
+        })
+  
+        // Recall function
+        gameTimer();
+      }
+  
+    }, 1000);
 
 };
 
@@ -250,15 +272,6 @@ function scoreboard() {
     io.sockets.emit('time-left', game.scoreboard.time_before_restart);
 
     if (game.scoreboard.time_before_restart === 0) {
-
-      function getConnectedSockets() {
-        return Object.values(io.of("/").connected);
-      }
-      
-      getConnectedSockets().forEach(function(s) {
-          s.disconnect(true);
-      });
-
       clearInterval(scoreboardTimer);
       resetGame();
     }
@@ -266,19 +279,55 @@ function scoreboard() {
   }, 1000)
 }
 
+function startPowerupExpiration(id) {
+  var timeLeft = game.powerups_experation;
+
+  var powerupTimer = setInterval( function() {
+    console.log(`Powerup has ${timeLeft}s left`);
+
+    timeLeft--;
+
+    if (timeLeft === 0) {
+      clearInterval( powerupTimer );
+      console.log("Powerup has expired");
+
+      // players.forEach( player => {
+      //   player.powerup = -1;
+      // })
+
+      Object.keys(players).forEach(function(key) {
+        players[key].powerup = -1;
+      });
+
+    }
+
+  }, 1000 )
+
+}
+
 function resetGame() {
   console.log("Reset game was called!");
+
+  //  Tell client game is over ( Scoreboard does this automatically, this is for manual resetGame calls! )
+  io.sockets.emit('time-left', 0);
+
+  function getConnectedSockets() {
+    return Object.values(io.of("/").connected);
+  }
+  
+  getConnectedSockets().forEach(function(s) {
+    s.disconnect(true);
+  });
 
   game = {
     ...clone, 
     bugs: clone.bugs,
     scoreboard: {...clone.scoreboard},
-    players: {}
+    players: {},
+    powerups: {...clone.powerups}
   };
   populateBugs();
 }
-
-
 
 // Called on the tagged player, freezes them then thaws them after period of time.
 function playerTagged(player) {
@@ -328,10 +377,25 @@ function ObjectLength( object ) {
 
 class Player {
 
-  constructor(x, y, xS, yS, color, nickname, zone, homeZone, ) {
-    this.carname = brand;
-    this.health = 100;
+  constructor(details) {
     this.active = false
+    this.x = 80;
+    this.y = 80;
+    this.xStart = 80;
+    this.yStart = 80;
+    this.r = 0;
+    this.score = 0;
+    this.color = "#b50000";
+    this.id = details.id;
+    this.health = 100;
+    this.nickname = details.nickname;
+    this.zone = "red";
+    this.homeZone = "red";
+    this.holding = 0;
+    this.powerup = -1;
+    this.canHold = true;
+    this.canMove = true;
+    this.tongue = false;
   }
 
   static hello() {
@@ -343,29 +407,37 @@ io.on('connection', function(socket) {
 
   socket.on('new player', function(data) {
 
-    console.log(game.bugs);
+    // console.log(game.bugs);
+    console.log(game.powerups_schedule)
 
     if (ObjectLength(players) == 0) {
-      players[socket.id] = {
-        active: false,
-        x: 80,
-        y: 80,
-        xStart: 80,
-        yStart: 80,
-        r: 0,
-        score: 3,
-        color: "#b50000",
-        id: socket.id,
-        health: 100,
+
+      players[socket.id] = new Player ({
         nickname: data['nickname'],
-        zone: "red",
-        homeZone: "red",
-        holding: 0,
-        powerup: -1,
-        canHold: true,
-        canMove: true,
-        tongue: false
-      };
+        id: socket.id
+      });
+
+      // players[socket.id] = {
+      //   active: false,
+      //   x: 80,
+      //   y: 80,
+      //   xStart: 80,
+      //   yStart: 80,
+      //   r: 0,
+      //   score: 3,
+      //   color: "#b50000",
+      //   id: socket.id,
+      //   health: 100,
+      //   nickname: data['nickname'],
+      //   zone: "red",
+      //   homeZone: "red",
+      //   holding: 0,
+      //   powerup: -1,
+      //   canHold: true,
+      //   canMove: true,
+      //   tongue: false
+      // };
+
     } else if (ObjectLength(players) == 1) {
       players[socket.id] = {
         active: false,
@@ -448,7 +520,14 @@ io.on('connection', function(socket) {
 
     // Set back to 4 
     if (ObjectLength(players) === (debug.mode === true ? debug.playersToStart : 4)) {
-      gameTimer();
+
+      if ( game.active === false ) {
+        console.log("Game loop is not active, starting up!")
+        console.log(game)
+        console.log(clone)
+        gameTimer();
+      }
+
     };
 
   });
@@ -500,10 +579,14 @@ io.on('connection', function(socket) {
 
     if (data.tongue) {
       player.tongue = true;
-      player.holding = -3;
+      player.canHold = false;
+      player.holding = 0;
+
       setInterval( function() { 
         player.holding = 0;
+        player.canHold = false;
       }, 3000);
+
     } else {
       player.tongue = false;
     }
@@ -591,8 +674,25 @@ io.on('connection', function(socket) {
         game.bugs[i].pad = "Moving";
       }
 
+      // Keep bug on top of player if player is holding bug
+      if ( player.holding !== 0 && player.canHold ) {
+        game.bugs[2].x = player.x - 10;
+        game.bugs[2].y = player.y - 10;
+      }
+
       // Bugs collision
-      if (player.x > game.bugs[i].x - 50 && player.x < +game.bugs[i].x + 50 && player.y > game.bugs[i].y - 50 && player.y < +game.bugs[i].y + 50 && (player.holding === i || player.holding === 0)) {
+      if ( 
+        player.x > game.bugs[i].x - 50 
+        && 
+        player.x < +game.bugs[i].x + 50
+        &&
+        player.y > game.bugs[i].y - 50 
+        &&
+        player.y < +game.bugs[i].y + 50 
+        && 
+        // (player.holding === i || player.holding === 0)
+        player.holding === 0
+      ) {
         // console.log('Player ' + player.id + ' is on bug ' + i);
         game.bugs[i].heldBy = player.homeZone;
         player.holding = i;
@@ -605,45 +705,47 @@ io.on('connection', function(socket) {
     }
 
      // Powerup location collision
-    //  if ( player.x > 380 - 40 && player.x < +380 + 40 && player.y > 380 - 40 && player.y < +380 + 40 && game.powerups.active.active === true) {
+     if ( player.x > game.powerups.active.x - 40 && player.x < +game.powerups.active.x + 40 && player.y > game.powerups.active.y - 40 && player.y < +game.powerups.active.y + 40 && game.powerups.active.active === true) {
 
-    //   console.log(player.homeZone + ' player was on powerup ' + game.powerups.active.id);
+      console.log(player.homeZone + ' player was on powerup ' + game.powerups.active.id);
 
-    //   switch(game.powerups.active.id) {
-    //     case 5:
-    //       player.health = player.health + 33;
-    //       game.powerups.active.active = false;
-    //       break;
-    //     case 4:
-    //       console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
-    //       game.powerups.active.active = false;
-    //       player.powerup = 4;
-    //       break;
-    //     case 3:
-    //       console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
-    //       game.powerups.active.active = false;
-    //       player.powerup = 3;
-    //       break;
-    //     case 2:
-    //       console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
-    //       game.powerups.active.active = false;
-    //       player.powerup = 2;
-    //       break;
-    //     case 1:
-    //       console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
-    //       game.powerups.active.active = false;
-    //       player.powerup = 1;
-    //       break;
-    //     case 0:
-    //       console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
-    //       game.powerups.active.active = false;
-    //       player.powerup = 0;
-    //       break;
-    //     default:
-    //       console.log('Unknown Powerup?');
-    //   }
+      switch(game.powerups.active.id) {
+        case 5:
+          player.health = player.health + 33;
+          game.powerups.active.active = false;
+          break;
+        case 4:
+          console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 4;
+          break;
+        case 3:
+          console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 3;
+          break;
+        case 'Stinky Frog':
+          // console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 'Stinky Frog';
+          break;
+        case 'Muddy Water':
+          // console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 'Muddy Water';
+          break;
+        case 'Tough Guy':
+          // console.log(game.powerups.cycled[game.powerups.active.id].name + ' Picked Up');
+          game.powerups.active.active = false;
+          player.powerup = 'Tough Guy';
+          break;
+        default:
+          console.log('Unknown Powerup?');
+      }
 
-    // }
+      startPowerupExpiration(game.powerups.active.id)
+
+    }
 
     // No bugs left at pad check
     for (i=0; i < 3; i++) {
@@ -655,10 +757,15 @@ io.on('connection', function(socket) {
 
   });
 
+  socket.on('resetGame', function() {
+    console.log("Reset Game Called");
+    resetGame();
+  })
+
 });
 
 setInterval(function() {
-  io.sockets.emit('state', players, game.bugs, game.insectTrack, game.powerups, game.timer);
+  io.sockets.emit('state', players, game.bugs, game.insectTrack, game.powerups, game.timer, game.powerups_schedule);
 }, 1000 / 60);
 
 io.on('connection', function(socket) {
@@ -669,13 +776,17 @@ io.on('connection', function(socket) {
     io.sockets.emit('disconnect');
 
     if (game.active === true) {
-      players[socket.id] = {
-        color: "white",
-        nickname: "Disconnected"
-      };
+      // players[socket.id] = {
+      //   color: "white",
+      //   nickname: "Disconnected"
+      // };
+
+      delete players[socket.id];
+
     } else {
       delete players[socket.id];
     }
 
   });
+
 });
