@@ -3,7 +3,7 @@
   "version": "",
   "dependencies": {
     "browser-sync": "^2.26.13",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "nipplejs": "^0.8.2",
     "socket.io": "^2.2.0"
   },
